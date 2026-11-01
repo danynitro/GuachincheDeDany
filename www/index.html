@@ -3,7 +3,17 @@
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17130f;color:#fff1dc;font-family:system-ui,Arial,sans-serif}header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 13px;background:linear-gradient(#503522,#302016);border-bottom:3px solid #a96c35}h1{font-size:19px;line-height:1.1;margin:0;color:#ffdc9a;text-shadow:2px 2px #24150d}.tag{font-size:10px;color:#e3c9a5;margin-top:3px}.day{font-weight:800;background:#241a13;border:1px solid #9a6639;border-radius:8px;padding:7px 10px;font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px;background:#261b14}.stat{background:#493323;border:1px solid #80532f;border-radius:8px;padding:7px 5px;text-align:center;font-size:11px}.stat b{display:block;font-size:16px;color:#ffe0a4;margin-top:2px}main{max-width:850px;margin:auto;padding:9px}.scene{position:relative;border:4px solid #9b6134;border-radius:11px;overflow:hidden;background:#719c58;box-shadow:0 5px 0 #26180f}canvas{display:block;width:100%;height:auto;image-rendering:pixelated}.notice{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:#fff7e8;color:#2c2118;border:3px solid #6c4428;border-radius:13px;padding:7px 12px;font-weight:900;font-size:13px;box-shadow:0 3px #4c2d1a;white-space:nowrap;display:none}.panel{background:#39291e;border:1px solid #80532f;border-radius:10px;padding:10px;margin-top:9px}.panel h2{font-size:14px;margin:0 0 8px;color:#ffdb9a}.buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}button{background:linear-gradient(#b8793d,#87502a);color:#fff4e3;border:1px solid #d49b5c;border-bottom:4px solid #58351e;border-radius:9px;padding:10px 7px;font-weight:800;font-size:12px}button:disabled{opacity:.4}button:active{transform:translateY(2px);border-bottom-width:2px}.menus{display:grid;grid-template-columns:1fr;gap:6px}.dish{background:#4a382a;border-radius:7px;padding:8px;font-size:11px;line-height:1.45}.dish b{color:#ffdb9a}.price{float:right;color:#bfe58c;font-weight:900}#log{font-size:11px;line-height:1.6;max-height:95px;overflow:auto;color:#ead6bd}.hint{font-size:10px;color:#cdb493;margin-top:7px}footer{text-align:center;color:#a88c6f;font-size:10px;padding:12px}
 @media(min-width:620px){.buttons{grid-template-columns:repeat(4,1fr)}.menus{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(4,1fr)}}
-.update-banner{display:none;margin:9px auto;padding:11px;background:#fff0c9;color:#352416;border:2px solid #c58a36;border-radius:10px;font-size:12px;font-weight:800;text-align:center}.update-banner button{margin:7px 4px 0;background:#315f36;border-color:#7ba76b}</style></head><body>
+.update-banner{display:none;margin:9px auto;padding:11px;background:#fff0c9;color:#352416;border:2px solid #c58a36;border-radius:10px;font-size:12px;font-weight:800;text-align:center}.update-banner button{margin:7px 4px 0;background:#315f36;border-color:#7ba76b}
+.order-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.order-card{background:#4a382a;border:1px solid #9a7047;border-radius:8px;padding:9px;font-size:12px}
+.order-card.active{border:2px solid #ffd17d;background:#5a402b}
+.order-card button{margin-top:7px;width:100%}
+.order-lines{line-height:1.7;color:#f6e6ce}
+.kitchen-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.kitchen-grid button{min-height:54px}
+.order-status{font-size:11px;color:#cfe9a8;margin-top:5px}
+@media(min-width:620px){.order-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.kitchen-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style></head><body>
 <header><div><h1>🍷 GUACHINCHE DE DANY</h1><div class="tag">Un rincón canario · Tenerife</div></div><div class="day">📅 DÍA <span id="day">1</span></div></header>
 <div class="stats"><div class="stat">💶 CAJA<b id="cash">350 €</b></div><div class="stat">🥔 INGREDIENTES<b id="stock">8</b></div><div class="stat">⭐ FAMA<b id="rep">1</b></div><div class="stat">👥 CLIENTES<b id="customers">0</b></div></div>
 <div id="updateBanner" class="update-banner"></div><main>
@@ -11,6 +21,9 @@
 <div class="panel"><h2>🛠️ GESTIONA TU GUACHINCHE</h2><div class="buttons">
 <button id="tableBtn">🪑 Comprar mesa · 60 €</button><button id="staffBtn">🧑‍🍳 Contratar camarero · 100 €</button><button id="stockBtn">📦 Ingredientes · 35 €</button><button id="upgradeBtn">🏡 Mejorar local · 180 €</button>
 </div><div class="hint">Si te quedas sin dinero y sin ingredientes, aparecerá un repartidor de Glovo con un pedido de emergencia.</div></div>
+
+<div class="panel"><h2>🧾 PEDIDOS DE LAS MESAS</h2><div id="orders" class="order-grid"><div class="dish">Esperando a los primeros clientes...</div></div></div>
+<div class="panel"><h2>👨‍🍳 COCINA · PREPARA TÚ LOS PLATOS</h2><div id="activeOrderInfo" class="dish">Selecciona un pedido para empezar.</div><div class="kitchen-grid" id="kitchenButtons"></div><div id="kitchenStatus" class="order-status">Selecciona los platos solicitados y después entrega el pedido.</div><button id="deliverBtn" disabled style="width:100%;margin-top:8px">🍽️ Entregar pedido</button></div>
 <div class="panel"><h2>🍽️ CARTA CANARIA</h2><div class="menus">
 <div class="dish"><b>MENÚ DESIRÉE</b><span class="price">24 €</span><br>Queso asado con mojo · Croquetas caseras · Carne fiesta con papas arrugadas · Quesillo · Vino del país</div>
 <div class="dish"><b>MENÚ DYLAN</b><span class="price">17 €</span><br>Papas arrugadas · Garbanzas · Carne fiesta · Refresco</div>
@@ -20,7 +33,7 @@
 </main><footer>Guachinche de Dany · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
-let cash=350,rep=1,tables=3,staff=1,stock=8,customers=[],day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
+let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
 const colors=['#d34f35','#315f9a','#527c42','#a44d83','#d18a32','#e6dfd1'];const caps=['flag','straw','black','blue'];const outfits=['#315b88','#bd4936','#416c49','#eee0c7','#7d4e91'];
 function save(){try{localStorage.setItem('gdd-save',JSON.stringify({cash,rep,tables,staff,stock,day,served,upgraded,lastCourierDay}))}catch(e){}}
 function load(){try{let x=JSON.parse(localStorage.getItem('gdd-save'));if(x){cash=x.cash??cash;rep=x.rep??rep;tables=x.tables??tables;staff=x.staff??staff;stock=x.stock??stock;day=x.day??day;served=x.served??served;upgraded=x.upgraded??upgraded;lastCourierDay=x.lastCourierDay??0}}catch(e){}}
@@ -89,15 +102,71 @@ function drawScene(){
 }
 function addLog(s){logs.unshift(s);logs=logs.slice(0,5);$('log').innerHTML=logs.join('<br>')}
 function courier(){stock+=10;courierTimer=12;lastCourierDay=day;$('notice').style.display='block';addLog('🛵 ¡Glovo ha llegado! Pedido de emergencia: +10 ingredientes gratis.');}
+const dishes=[
+ {id:'desiree',name:'Menú Desirée',price:24},
+ {id:'dylan',name:'Menú Dylan',price:17},
+ {id:'jacqueline',name:'Menú Jacqueline',price:21},
+ {id:'papas-carne',name:'Papas con carne',price:12},
+ {id:'papas-mojo',name:'Papas arrugadas',price:8},
+ {id:'queso',name:'Queso asado',price:9},
+ {id:'carne',name:'Carne fiesta',price:14}
+];
+function makeOrder(table){
+ const patterns=[
+  [['desiree',1],['papas-carne',2],['dylan',1]],
+  [['dylan',2],['papas-mojo',1]],
+  [['desiree',1],['queso',1]],
+  [['jacqueline',1],['papas-carne',1]],
+  [['papas-carne',2],['carne',1]]
+ ];
+ const pattern=patterns[Math.floor(Math.random()*patterns.length)];
+ const items=pattern.map(([id,qty])=>({id,qty,ready:0}));
+ const order={id:nextOrderId++,table,items,created:tick};
+ orders.push(order);activeOrderId=order.id;
+ const spoken=items.map(it=>it.qty+' '+dishes.find(d=>d.id===it.id).name).join(', ');
+ addLog('🗣️ Mesa '+table+' pide: '+spoken+'.');
+ renderOrders();
+}
+function currentOrder(){return orders.find(o=>o.id===activeOrderId)||null}
+function renderOrders(){
+ const root=$('orders');if(!root)return;
+ if(!orders.length){root.innerHTML='<div class="dish">No hay pedidos pendientes. Espera a que lleguen clientes.</div>'}
+ else root.innerHTML=orders.map(o=>{
+  const done=o.items.every(i=>i.ready>=i.qty);
+  const lines=o.items.map(i=>'<div>• '+i.qty+' × '+dishes.find(d=>d.id===i.id).name+' <b>('+i.ready+'/'+i.qty+')</b></div>').join('');
+  return '<div class="order-card '+(o.id===activeOrderId?'active':'')+'"><b>🪑 MESA '+o.table+'</b><div class="order-lines">'+lines+'</div><div class="order-status">'+(done?'Todo preparado · listo para entregar':'Esperando preparación')+'</div><button onclick="selectOrder('+o.id+')">Seleccionar pedido</button></div>';
+ }).join('');
+ const o=currentOrder();
+ $('activeOrderInfo').innerHTML=o?'<b>Pedido de la mesa '+o.table+'</b><div class="order-lines">'+o.items.map(i=>'• '+i.qty+' × '+dishes.find(d=>d.id===i.id).name+' — preparados: '+i.ready+'/'+i.qty).join('<br>')+'</div>':'Selecciona un pedido para empezar.';
+ $('kitchenButtons').innerHTML=dishes.map(d=>'<button onclick="prepareDish(\''+d.id+'\')" '+(!o||!o.items.some(i=>i.id===d.id&&i.ready<i.qty)||stock<=0?'disabled':'')+'>'+d.name+'</button>').join('');
+ $('deliverBtn').disabled=!o||!o.items.every(i=>i.ready>=i.qty);
+ $('kitchenStatus').textContent=o?'Ingredientes disponibles: '+stock+' · Prepara solo los platos que aparecen en el pedido.':'Selecciona un pedido para cocinar.';
+}
+window.selectOrder=id=>{activeOrderId=id;renderOrders()};
+window.prepareDish=id=>{
+ const o=currentOrder(),item=o&&o.items.find(i=>i.id===id);
+ if(!item||item.ready>=item.qty)return;
+ if(stock<1){addLog('⚠️ No quedan ingredientes. Pide suministros a Glovo o compra más.');return}
+ item.ready++;stock--;addLog('👨‍🍳 Mesa '+o.table+': preparado '+dishes.find(d=>d.id===id).name+'.');updateUI();renderOrders();save();
+};
+function deliverOrder(){
+ const o=currentOrder();if(!o||!o.items.every(i=>i.ready>=i.qty))return;
+ const total=o.items.reduce((sum,i)=>sum+dishes.find(d=>d.id===i.id).price*i.qty,0);
+ cash+=total;served++;rep=Math.min(100,rep+(served%3===0?1:0));
+ customers=customers.filter((p)=>p.orderId!==o.id);
+ orders=orders.filter(x=>x.id!==o.id);activeOrderId=orders.length?orders[0].id:null;
+ addLog('✅ Mesa '+o.table+' atendida. Cobras '+total+' €.');updateUI();renderOrders();drawScene();save();
+}
+$('deliverBtn').onclick=deliverOrder;
 function updateUI(){
- $('cash').textContent=cash+' €';$('stock').textContent=stock;$('rep').textContent=rep;$('customers').textContent=customers.length;$('day').textContent=day;
+ $('cash').textContent=cash+' €';$('stock').textContent=stock;$('rep').textContent=rep+'%';$('customers').textContent=orders.length;$('day').textContent=day;
  $('tableBtn').disabled=cash<60||tables>=8;$('staffBtn').disabled=cash<100||staff>=5;$('stockBtn').disabled=cash<35;$('upgradeBtn').disabled=cash<180||upgraded;
+ renderOrders();
 }
 function update(){
  tick++;
- if(tick%5===0&&customers.length<Math.min(tables*2,12)&&stock>0){let idx=customers.length;customers.push({table:idx%Math.max(1,Math.min(tables,8)),shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]})}
- if(tick%8===0&&customers.length&&stock>0){customers.shift();let menu=[['Menú Desirée',24],['Menú Dylan',17],['Menú Jacqueline',21],['Papas y queso',11]][Math.floor(Math.random()*4)];cash+=menu[1];stock=Math.max(0,stock-2);served++;if(served%5===0){rep++;addLog('⭐ ¡Buena jornada! Tu fama ha subido.')}else addLog('🍽️ Pedido servido: '+menu[0]+' · +'+menu[1]+' €')}
- if(tick%40===0){day++;let wages=staff*4;cash=Math.max(0,cash-wages);addLog('📅 Día '+day+'. Nóminas: '+wages+' €.')}
+ if(tick%12===0&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]};customers.push(customer);makeOrder(free);customer.orderId=activeOrderId;}}
+ if(tick%60===0){day++;let wages=staff*4;cash=Math.max(0,cash-wages);addLog('📅 Día '+day+'. Nóminas: '+wages+' €.')}
  // Emergency delivery prevents the business from becoming permanently stuck.
  if(stock===0&&cash<35&&lastCourierDay!==day)courier();
  if(courierTimer>0){courierTimer--;if(courierTimer===0)$('notice').style.display='none'}
@@ -107,7 +176,7 @@ $('tableBtn').onclick=()=>{if(cash>=60&&tables<8){cash-=60;tables++;addLog('🪑
 $('staffBtn').onclick=()=>{if(cash>=100&&staff<5){cash-=100;staff++;addLog('🧑‍🍳 Has contratado a un camarero.')}updateUI();drawScene();save()};
 $('stockBtn').onclick=()=>{if(cash>=35){cash-=35;stock+=12;addLog('📦 Has comprado 12 unidades de ingredientes.')}updateUI();drawScene();save()};
 $('upgradeBtn').onclick=()=>{if(cash>=180&&!upgraded){cash-=180;upgraded=true;rep+=2;addLog('🏡 ¡Has mejorado el local!')}updateUI();drawScene();save()};
-load();updateUI();drawScene();setInterval(update,1000);
+load();updateUI();renderOrders();drawScene();setInterval(update,1000);
 
 const APP_VERSION='0.2.0';
 async function checkForUpdates(){
