@@ -52,10 +52,10 @@ button{min-height:42px;touch-action:manipulation}
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v2.8 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v2.9 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
-let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
+let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
 const colors=['#d34f35','#315f9a','#527c42','#a44d83','#d18a32','#e6dfd1'];const caps=['flag','straw','black','blue'];const outfits=['#315b88','#bd4936','#416c49','#eee0c7','#7d4e91'];
 function save(){try{localStorage.setItem('gdd-save',JSON.stringify({cash,rep,tables,staff,stock,day,served,upgraded,lastCourierDay,orders,customers,nextOrderId,activeOrderId}))}catch(e){}}
 function load(){try{let x=JSON.parse(localStorage.getItem('gdd-save'));if(x){cash=x.cash??cash;rep=x.rep??rep;tables=x.tables??tables;staff=x.staff??staff;stock=x.stock??stock;day=x.day??day;served=x.served??served;upgraded=x.upgraded??upgraded;lastCourierDay=x.lastCourierDay??0;orders=Array.isArray(x.orders)?x.orders:[];customers=Array.isArray(x.customers)?x.customers:[];nextOrderId=x.nextOrderId??1;activeOrderId=x.activeOrderId??(orders[0]?.id??null)}}catch(e){}}
@@ -86,6 +86,27 @@ function table(x,y,n){
  // red and white tablecloth
  for(let i=0;i<5;i++)for(let j=0;j<3;j++)if((i+j)%2===0)rect(x-11+i*8,y-4+j*8,8,8,'#b83e31');
  rect(x+1,y+1,8,6,'#e7d2a9');rect(x+12,y+3,5,5,'#7a9a46');text(''+n,x-1,y+35,9,'#4b3020');
+}
+function waiterHome(i){return {x:470+(i%2)*42,y:255+Math.floor(i/2)*48};}
+function tableSpot(n){return {x:125+((n-1)%4)*126,y:190+Math.floor((n-1)/4)*125};}
+function updateWaiters(){
+ while(waiters.length<staff){const p=waiterHome(waiters.length);waiters.push({x:p.x,y:p.y,mode:'idle',table:0,wait:0});}
+ waiters.length=staff;
+ waiters.forEach((w,i)=>{
+  if(w.mode==='idle'){
+   const o=orders.find(o=>((o.table-1)%staff)===i);
+   if(o){w.table=o.table;w.mode='going';}
+  }
+  const home=waiterHome(i),dest=w.mode==='going'||w.mode==='visiting'?tableSpot(w.table):home;
+  if(w.mode==='idle')return;
+  const dx=dest.x-w.x,dy=dest.y-w.y,dist=Math.hypot(dx,dy),speed=3.2;
+  if(dist>speed){w.x+=dx/dist*speed;w.y+=dy/dist*speed;}
+  else {w.x=dest.x;w.y=dest.y;
+   if(w.mode==='going'){w.mode='visiting';w.wait=3;addLog('🧑‍🍳 El camarero '+(i+1)+' ha llegado a la mesa '+w.table+'.');}
+   else if(w.mode==='visiting'){w.wait--;if(w.wait<=0)w.mode='returning';}
+   else if(w.mode==='returning'){w.mode='idle';w.table=0;}
+  }
+ });
 }
 function drawScene(){
  rect(0,0,640,400,'#759d5a');
@@ -136,8 +157,8 @@ function drawScene(){
  person(335,115,{shirt:'#eee0c7',hat:'black'},1.2);
  // customers sit at tables
  customers.forEach((p,i)=>{let sp=spots[p.table%spots.length]||spots[0];person(sp.x-13,sp.y-20,{shirt:p.shirt,hat:p.hat,skin:p.skin},.88);if(i%2===0)person(sp.x+22,sp.y-18,{shirt:p.shirt2,hat:p.hat2,skin:'#d99a72'},.82)});
- // staff in apron / flag cap
- for(let i=0;i<staff;i++){person(475+(i%2)*48,265+Math.floor(i/2)*55,{shirt:'#f0dfc7',hat:i%2?'blue':'flag'},.9);rect(466+(i%2)*48,267+Math.floor(i/2)*55,20,3,'#3c2c20')}
+ // Camareros: cada uno atiende las mesas que le corresponden y camina hasta ellas
+ waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#f0dfc7',hat:i%2?'blue':'flag'},.9);rect(w.x-9,w.y+9,20,3,'#3c2c20');});
  // delivery rider with motorbike while event active
  if(courierTimer>0){rect(510,310,80,15,'#51402a');rect(520,284,47,21,'#f4c928');outline(520,284,47,21,'#29221b');rect(531,273,22,14,'#f4c928');person(543,276,{shirt:'#f3c928',hat:'blue',skin:'#d99a72'},.8);text('Glovo',523,299,9,'#168b56');rect(492,316,17,10,'#292929');rect(574,316,17,10,'#292929')}
  // decorative sign and island flag
@@ -209,6 +230,7 @@ function updateUI(){
 }
 function update(){
  tick++;
+ updateWaiters();
  if(tick%12===0&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]};customers.push(customer);makeOrder(free);customer.orderId=activeOrderId;}}
  if(tick%60===0){day++;let wages=staff*4;cash=Math.max(0,cash-wages);addLog('📅 Día '+day+'. Nóminas: '+wages+' €.')}
  // Emergency delivery prevents the business from becoming permanently stuck.
