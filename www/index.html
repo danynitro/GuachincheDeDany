@@ -72,6 +72,8 @@ footer{color:#b8d6e5}
 <div class="dish"><b>MENÚ DESIRÉE</b><span class="price">24 €</span><br>Queso asado con mojo · Croquetas caseras · Carne fiesta con papas arrugadas · Quesillo · Vino del país</div>
 <div class="dish"><b>MENÚ DYLAN</b><span class="price">17 €</span><br>Papas arrugadas · Garbanzas · Carne fiesta · Refresco</div>
 <div class="dish"><b>MENÚ JACQUELINE</b><span class="price">21 €</span><br>Escaldón de gofio · Queso blanco · Pescado del día · Príncipe Alberto · Bebida</div>
+<div class="dish"><b>PLATOS CANARIOS</b><br>Ropa vieja · Conejo en salmorejo · Puchero canario · Tollos en salsa · Cherne a la plancha · Garbanzas · Escaldón de gofio · Croquetas caseras</div>
+<div class="dish"><b>BEBIDAS</b><br>Agua · Clipper · Vino tinto del país · Vino afrutado<br><span class="hint">Cada mesa pide una o dos bebidas aparte de la comida.</span></div>
 </div></div>
 <div class="panel" id="activityPanel"><h2>📰 ACTIVIDAD DEL NEGOCIO</h2><div id="log">Has abierto tu guachinche. ¡Que empiece el servicio!</div></div>
 </main>
@@ -81,7 +83,7 @@ footer{color:#b8d6e5}
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v2.15 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v2.17 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=5,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
@@ -202,8 +204,20 @@ const dishes=[
  {id:'jacqueline',name:'Menú Jacqueline',price:21},
  {id:'papas-carne',name:'Papas con carne',price:12},
  {id:'papas-mojo',name:'Papas arrugadas',price:8},
- {id:'queso',name:'Queso asado',price:9},
- {id:'carne',name:'Carne fiesta',price:14}
+ {id:'queso',name:'Queso asado con mojo',price:9},
+ {id:'carne',name:'Carne fiesta',price:14},
+ {id:'escaldon',name:'Escaldón de gofio',price:10},
+ {id:'garbanzas',name:'Garbanzas canarias',price:9},
+ {id:'ropa-vieja',name:'Ropa vieja canaria',price:13},
+ {id:'conejo',name:'Conejo en salmorejo',price:16},
+ {id:'puchero',name:'Puchero canario',price:14},
+ {id:'tollos',name:'Tollos en salsa',price:12},
+ {id:'cherne',name:'Cherne a la plancha',price:17},
+ {id:'croquetas',name:'Croquetas caseras',price:8},
+ {id:'agua',name:'Agua',price:1.5},
+ {id:'clipper',name:'Clipper',price:2},
+ {id:'vino-tinto',name:'Vino tinto del país',price:3},
+ {id:'vino-afrutado',name:'Vino afrutado',price:3}
 ];
 function makeOrder(table){
  const patterns=[
@@ -211,10 +225,20 @@ function makeOrder(table){
   [['dylan',2],['papas-mojo',1]],
   [['desiree',1],['queso',1]],
   [['jacqueline',1],['papas-carne',1]],
-  [['papas-carne',2],['carne',1]]
+  [['papas-carne',2],['carne',1]],
+  [['escaldon',1],['garbanzas',1]],
+  [['ropa-vieja',1],['papas-mojo',1]],
+  [['conejo',1],['queso',1]],
+  [['puchero',1],['croquetas',1]],
+  [['tollos',1],['papas-mojo',1]],
+  [['cherne',1],['escaldon',1]]
  ];
  const pattern=patterns[Math.floor(Math.random()*patterns.length)];
- const items=pattern.map(([id,qty])=>({id,qty,ready:0}));
+ const drinkIds=['agua','clipper','vino-tinto','vino-afrutado'];
+ const drinkCount=Math.random()<.35?2:1;
+ const drinks=[];
+ while(drinks.length<drinkCount){const id=drinkIds[Math.floor(Math.random()*drinkIds.length)];if(!drinks.includes(id))drinks.push(id);}
+ const items=pattern.concat(drinks.map(id=>[id,1])).map(([id,qty])=>({id,qty,ready:0}));
  const order={id:nextOrderId++,table,items,created:tick};
  orders.push(order);if(activeOrderId===null)activeOrderId=order.id;
  const spoken=items.map(it=>it.qty+' '+dishes.find(d=>d.id===it.id).name).join(', ');
