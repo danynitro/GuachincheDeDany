@@ -422,7 +422,7 @@ function updateUI(){
  renderOrders();
 }
 const canarianTalk=[
- '¡Chacho, qué hambre!','Mi niño, ponme un Clipper.','¡Esto está fetén!','¡Qué rico está el mojo!','Una de papas arrugadas, mi niño.','¡Ños, qué bueno!','Hoy toca carne fiesta.','Pásame el gofio, chacho.','¡Está más bueno que el pan!','¿Queda quesillo?','Una copita de vino del país.','¡Fuerte guachinche bueno!','Voy llegando en la guagua.','¡Qué calor, mi niño!','Con mojo picón sabe mejor.','Ponme otro platito, chacho.','¡Está de rechupete!','Aquí se come como en casa.','Un poquito más de escaldón.','¡Mi niño, esto está de lujo!'
+ '¿Qué tal está la carne fiesta?','Ponme otra caña, porfa.','¿Queda algo de queso asado?','Esto está buenísimo.','Chacho, qué hambre tengo.','¿Pedimos unas papas más?','Ahora mismo te traigo el mojo.','Ños, qué bueno está esto.','¿Tienen postre casero?','Yo voy a pedir lo mismo.','Deja un huequito para el quesillo.','¿Nos sentamos aquí?','La verdad es que se está de lujo aquí.','Oye, ¿me traes un poco de pan?','Está todo recién hecho, ¿no?','Voy a probar un poquito de eso.','No tengas prisa, estamos tranquilos.','¿Te apetece compartir una ración?','Con ese olor me ha entrado hambre otra vez.','Cuando puedas, nos cobras.'
 ];
 let chatBubble=null,chatCooldown=7;
 function drawChatBubble(x,y,message){
@@ -487,7 +487,7 @@ async function startIsa(){
 ['pointerdown','touchstart','click'].forEach(evt=>document.addEventListener(evt,startIsa,{once:true,passive:true}));
 
 // V2.18: comprobación de actualizaciones publicadas en GitHub Releases.
-const APP_VERSION='3.0.5';
+const APP_VERSION='3.0.6';
 async function checkForUpdates(){
  $('updateBanner').style.display='none';
  try{
