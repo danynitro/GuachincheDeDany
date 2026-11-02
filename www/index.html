@@ -135,7 +135,7 @@ footer{color:#d9efff}
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v3.0.1 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v3.0.9 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=5,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
@@ -173,14 +173,14 @@ function text(t,x,y,size=10,color='#fff1dc'){g.font='bold '+size+'px monospace';
 function drawFlag(x,y,w,h){rect(x,y,w/3,h,'#fff');rect(x+w/3,y,w/3,h,'#1766ad');rect(x+2*w/3,y,w/3,h,'#f5c928');outline(x,y,w,h,'#39281b')}
 function person(x,y,o={},scale=1){
  // Personaje cartoon vectorial de cuerpo entero, con volumen y detalles dibujados en Canvas
- const z=scale,skin=o.skin||'#d99a72',shirt=o.shirt||'#eee0c7',hat=o.hat||'flag',ctx=g;
- ctx.save();ctx.translate(x,y);ctx.scale(z,z);
+ const z=scale,skin=o.skin||'#d99a72',shirt=o.shirt||'#eee0c7',hat=o.hat||'flag',ctx=g,bodyScale=o.body==='wide'?1.16:o.body==='slim'?.88:1,pants=o.pants||'#45596a';
+ ctx.save();ctx.translate(x,y);ctx.scale(z*bodyScale,z);
  const rr=(x,y,w,h,r,fill,stroke='#30231d',lw=1.7)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.lineWidth=lw;ctx.strokeStyle=stroke;ctx.stroke();}};
  const el=(x,y,rx,ry,fill,stroke='#30231d',lw=1.5)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.lineWidth=lw;ctx.strokeStyle=stroke;ctx.stroke();}};
  const gr=(x,y,w,h,a,b)=>{let q=ctx.createLinearGradient(x,y,x+w,y+h);q.addColorStop(0,a);q.addColorStop(1,b);return q;};
  // sombra, piernas y zapatillas
  el(0,23,15,3.5,'#30251e66',null);
- rr(-10,11,8,12,3,gr(-10,11,8,12,'#45596a','#182b3a'));rr(2,11,8,12,3,gr(2,11,8,12,'#45596a','#182b3a'));
+ rr(-10,11,8,12,3,gr(-10,11,8,12,pants,'#182b3a'));rr(2,11,8,12,3,gr(2,11,8,12,pants,'#182b3a'));
  rr(-13,20,12,5,2,'#292a2b');rr(1,20,13,5,2,'#292a2b');rr(-12,20,8,1,1,'#eee',null);rr(4,20,8,1,1,'#eee',null);
  // torso y brazos
  rr(-12,-5,24,21,6,gr(-12,-5,24,21,shirt,'#a78e77'));
@@ -192,6 +192,11 @@ function person(x,y,o={},scale=1){
   rr(-6,-4,3,5,1,'#292d32');rr(3,-4,3,5,1,'#292d32');
   rr(-6,3,12,1,1,'#aaa49a',null);rr(-5,8,10,5,1,'#292d32','#8b8174',.7);
   el(5,5,1.1,1.1,'#e5c27d',null);
+ }else if(hat==='waiter'){
+  rr(-9,0,18,16,3,gr(-9,0,18,16,'#123c58','#071d2b'));
+  rr(-8,-2,16,17,3,gr(-8,-2,16,17,'#173f5b','#09263b'));
+  rr(-6,1,12,1,1,'#d8b66a',null);rr(-5,5,10,1,1,'#d8b66a',null);
+  rr(-5,9,10,5,1,'#102d42','#d8b66a',.7);el(0,11,1,1,'#f4d58a',null);
  }else{
   rr(-9,0,18,16,3,gr(-9,0,18,16,shirt,'#b6a18b'));
   rr(-1,1,2,13,1,'#ffffff88',null);el(0,4,1,1,'#8e6b4d',null);el(0,9,1,1,'#8e6b4d',null);
@@ -200,7 +205,7 @@ function person(x,y,o={},scale=1){
  rr(-4,-13,8,10,2,skin);el(-10,-22,3.8,5,skin);el(10,-22,3.8,5,skin);
  el(0,-27,11.5,14,gr(-11,-41,23,28,'#ffd5ad',skin),'#3b281e',1.8);
  // cabello visible en laterales
- if(hat==='black'||hat==='blue'){el(-9,-29,3,7,'#211c1a',null);el(9,-29,3,7,'#211c1a',null);}
+ if(hat==='black'||hat==='blue'||hat==='waiter'){el(-9,-29,3,7,'#211c1a',null);el(9,-29,3,7,'#211c1a',null);}
  else {rr(-10,-35,4,9,2,'#34251f',null);rr(6,-35,4,9,2,'#34251f',null);}
  // cejas y ojos grandes con reflejo
  rr(-7,-32,5,1.8,1,'#38241d',null);rr(2,-32,5,1.8,1,'#38241d',null);
@@ -226,6 +231,10 @@ function person(x,y,o={},scale=1){
   rr(-14,-40,28,7,3,gr(-14,-40,28,7,'#2e8bc6','#12416f'));
   rr(-8,-49,17,12,5,gr(-8,-49,17,12,'#f3dfb3','#c1a77b'));
   rr(-14,-37,28,2,1,'#f0c62e',null);rr(-2,-47,5,8,1,'#2466ad',null);
+ }else if(hat==='waiter'){
+  rr(-13,-40,26,7,3,gr(-13,-40,26,7,'#173f5b','#09263b'));
+  rr(-8,-49,17,12,5,gr(-8,-49,17,12,'#1e5274','#0b2d48'));
+  rr(-14,-37,28,2,1,'#d8b66a',null);rr(-2,-47,5,5,1,'#f4d58a',null);
  }else{
   rr(-14,-40,28,7,3,'#f4eee0');rr(-8,-49,17,12,5,'#f4eee0');
   rr(-14,-40,9,6,1,'#fff',null);rr(-5,-40,9,6,1,'#2466ad',null);rr(4,-40,10,6,1,'#f1c62d',null);
@@ -313,9 +322,9 @@ function drawScene(){
  // Dany atendiendo en la barra
  person(337,213,{shirt:'#eee0c7',hat:'black',skin:'#d99a72'},1.25);
  // clientes en las mesas
- customers.forEach((p,i)=>{if(!spots.length)return;let sp=spots[p.table%spots.length]||spots[0];person(sp.x-12,sp.y-20,{shirt:p.shirt,hat:p.hat,skin:p.skin},.86);if(i%2===0)person(sp.x+20,sp.y-17,{shirt:p.shirt2,hat:p.hat2,skin:'#d99a72'},.8)});
+ customers.forEach((p,i)=>{if(!spots.length)return;let sp=spots[p.table%spots.length]||spots[0];person(sp.x-12,sp.y-20,{shirt:p.shirt,hat:p.hat,skin:p.skin,body:p.body,pants:p.pants},.86);if(i%2===0)person(sp.x+20,sp.y-17,{shirt:p.shirt2,hat:p.hat2,skin:p.skin2||'#d99a72',body:p.body2,pants:p.pants2},.8)});
  // camareros
- waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#176b86',hat:'blue',skin:'#c9855d'},1.18);g.save();g.fillStyle='#f4c928';g.strokeStyle='#30231d';g.lineWidth=1.5;g.beginPath();g.roundRect(w.x+10,w.y-15,19,5,2);g.fill();g.stroke();g.fillStyle='#fff0d5';g.font='bold 8px system-ui';g.textAlign='center';g.fillText('CAMARERO',w.x,w.y-37);g.restore();});
+ waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#f5ead7',hat:'waiter',skin:'#c9855d',pants:'#202b35'},1.18);g.save();g.fillStyle='#123c58';g.strokeStyle='#d8b66a';g.lineWidth=1;g.beginPath();g.roundRect(w.x-23,w.y-57,46,12,4);g.fill();g.stroke();g.fillStyle='#fff0d5';g.font='bold 7px system-ui';g.textAlign='center';g.fillText('CAMARERO',w.x,w.y-48);g.restore();});
  // Bocadillos aleatorios con expresiones canarias
  if(chatBubble){
   if(chatBubble.table>0){const sp=spots[(chatBubble.table-1)%spots.length];if(sp)drawChatBubble(sp.x-8,sp.y-48,chatBubble.text);}
@@ -455,7 +464,7 @@ function update(){
   chatCooldown=7+Math.floor(Math.random()*8);
  }
  updateWaiters();
- if(orderCooldown>0)orderCooldown--;if(orderCooldown<=0&&orders.length<3&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]};customers.push(customer);makeOrder(free);customer.orderId=orders[orders.length-1].id;orderCooldown=12;}}
+ if(orderCooldown>0)orderCooldown--;if(orderCooldown<=0&&orders.length<3&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)],skin2:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],body:['slim','normal','wide'][Math.floor(Math.random()*3)],body2:['slim','normal','wide'][Math.floor(Math.random()*3)],pants:['#293e59','#5b4638','#374d3d','#27272c','#6b536b'][Math.floor(Math.random()*5)],pants2:['#293e59','#5b4638','#374d3d','#27272c','#6b536b'][Math.floor(Math.random()*5)]};customers.push(customer);makeOrder(free);customer.orderId=orders[orders.length-1].id;orderCooldown=12;}}
  if(tick%60===0){day++;let wages=staff*4;cash=Math.max(0,cash-wages);addLog('📅 Día '+day+'. Nóminas: '+wages+' €.')}
  // Emergency delivery prevents the business from becoming permanently stuck.
  if(stock===0&&cash<35&&lastCourierDay!==day)courier();
@@ -496,7 +505,7 @@ async function startIsa(){
 ['pointerdown','touchstart','click'].forEach(evt=>document.addEventListener(evt,startIsa,{once:true,passive:true}));
 
 // V2.18: comprobación de actualizaciones publicadas en GitHub Releases.
-const APP_VERSION='3.0.8';
+const APP_VERSION='3.0.9';
 async function checkForUpdates(){
  $('updateBanner').style.display='none';
  try{
