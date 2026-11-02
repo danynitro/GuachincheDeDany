@@ -307,6 +307,11 @@ function drawScene(){
  customers.forEach((p,i)=>{if(!spots.length)return;let sp=spots[p.table%spots.length]||spots[0];person(sp.x-12,sp.y-20,{shirt:p.shirt,hat:p.hat,skin:p.skin},.86);if(i%2===0)person(sp.x+20,sp.y-17,{shirt:p.shirt2,hat:p.hat2,skin:'#d99a72'},.8)});
  // camareros
  waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#f0dfc7',hat:i%2?'blue':'flag'},.9)});
+ // Bocadillos aleatorios con expresiones canarias
+ if(chatBubble){
+  if(chatBubble.table>0){const sp=spots[(chatBubble.table-1)%spots.length];if(sp)drawChatBubble(sp.x-8,sp.y-48,chatBubble.text);}
+  else drawChatBubble(337,165,chatBubble.text);
+ }
  // repartidor y moto durante pedido
  if(courierTimer>0){rect(520,320,65,9,'#262626');rect(526,300,43,20,'#f4c928');outline(526,300,43,20,'#29221b');person(545,285,{shirt:'#f3c928',hat:'blue',skin:'#d99a72'},.85);text('Glovo',531,314,9,'#168b56');rect(510,329,13,10,'#292929');rect(576,329,13,10,'#292929')}
  text('TENERIFE · SABORES DE CANARIAS',205,393,10,'#fff0d5');
@@ -416,8 +421,30 @@ function updateUI(){
  $('tableBtn').disabled=cash<60||tables>=8;$('staffBtn').disabled=cash<100||staff>=5;$('stockBtn').disabled=cash<35;$('upgradeBtn').disabled=cash<180||upgraded;
  renderOrders();
 }
+const canarianTalk=[
+ '¡Chacho, qué hambre!','Mi niño, ponme un Clipper.','¡Esto está fetén!','¡Qué rico está el mojo!','Una de papas arrugadas, mi niño.','¡Ños, qué bueno!','Hoy toca carne fiesta.','Pásame el gofio, chacho.','¡Está más bueno que el pan!','¿Queda quesillo?','Una copita de vino del país.','¡Fuerte guachinche bueno!','Voy llegando en la guagua.','¡Qué calor, mi niño!','Con mojo picón sabe mejor.','Ponme otro platito, chacho.','¡Está de rechupete!','Aquí se come como en casa.','Un poquito más de escaldón.','¡Mi niño, esto está de lujo!'
+];
+let chatBubble=null,chatCooldown=7;
+function drawChatBubble(x,y,message){
+ const lines=[];let words=message.split(' '),line='';
+ for(const word of words){const test=line?line+' '+word:word;if(g.measureText(test).width>116&&line){lines.push(line);line=word;}else line=test;}
+ if(line)lines.push(line);
+ const shown=lines.slice(0,2),w=Math.min(142,Math.max(74,...shown.map(t=>g.measureText(t).width+18))),h=shown.length*14+13;
+ const bx=Math.max(4,Math.min(640-w-4,x-w/2)),by=Math.max(4,y-h-12);
+ g.save();g.fillStyle='#fff9e9';g.strokeStyle='#174f79';g.lineWidth=2;
+ g.beginPath();g.roundRect(bx,by,w,h,7);g.fill();g.stroke();
+ g.beginPath();g.moveTo(x-5,by+h-1);g.lineTo(x+1,by+h+8);g.lineTo(x+5,by+h-1);g.closePath();g.fill();g.stroke();
+ g.fillStyle='#173c56';g.font='bold 10px system-ui';g.textAlign='center';
+ shown.forEach((t,i)=>g.fillText(t,bx+w/2,by+15+i*14));g.restore();
+}
 function update(){
  tick++;
+ if(chatBubble&&chatBubble.until<=tick)chatBubble=null;
+ if(--chatCooldown<=0){
+  if(customers.length){const p=customers[Math.floor(Math.random()*customers.length)];chatBubble={table:p.table,text:canarianTalk[Math.floor(Math.random()*canarianTalk.length)],until:tick+4};}
+  else chatBubble={table:0,text:canarianTalk[Math.floor(Math.random()*canarianTalk.length)],until:tick+4};
+  chatCooldown=7+Math.floor(Math.random()*8);
+ }
  updateWaiters();
  if(orderCooldown>0)orderCooldown--;if(orderCooldown<=0&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]};customers.push(customer);makeOrder(free);customer.orderId=orders[orders.length-1].id;orderCooldown=12;}}
  if(tick%60===0){day++;let wages=staff*4;cash=Math.max(0,cash-wages);addLog('📅 Día '+day+'. Nóminas: '+wages+' €.')}
