@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      APP_VERSION: v3.0.4
+      APP_VERSION: v3.0.5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
