@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#34251b"><title>Guachinche de Dany</title>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#15558a"><title>Guachinche de Dany</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#17130f;color:#fff1dc;font-family:system-ui,Arial,sans-serif}header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 13px;background:linear-gradient(#503522,#302016);border-bottom:3px solid #a96c35}h1{font-size:19px;line-height:1.1;margin:0;color:#ffdc9a;text-shadow:2px 2px #24150d}.tag{font-size:10px;color:#e3c9a5;margin-top:3px}.header-actions{display:flex;align-items:center;gap:6px}.music-btn{font-size:10px;min-height:36px;padding:7px 8px;background:linear-gradient(#6d7540,#46502a);border-color:#a7ad66;white-space:nowrap}.day{font-weight:800;background:#241a13;border:1px solid #9a6639;border-radius:8px;padding:7px 10px;font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px;background:#261b14}.stat{background:#493323;border:1px solid #80532f;border-radius:8px;padding:7px 5px;text-align:center;font-size:11px}.stat b{display:block;font-size:16px;color:#ffe0a4;margin-top:2px}main{max-width:850px;margin:auto;padding:9px}.scene{position:relative;border:4px solid #9b6134;border-radius:11px;overflow:hidden;background:#719c58;box-shadow:0 5px 0 #26180f}canvas{display:block;width:100%;height:auto;image-rendering:pixelated}.notice{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:#fff7e8;color:#2c2118;border:3px solid #6c4428;border-radius:13px;padding:7px 12px;font-weight:900;font-size:13px;box-shadow:0 3px #4c2d1a;white-space:nowrap;display:none}.panel{background:#39291e;border:1px solid #80532f;border-radius:10px;padding:10px;margin-top:9px}.panel h2{font-size:14px;margin:0 0 8px;color:#ffdb9a}.buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}button{background:linear-gradient(#b8793d,#87502a);color:#fff4e3;border:1px solid #d49b5c;border-bottom:4px solid #58351e;border-radius:9px;padding:10px 7px;font-weight:800;font-size:12px}button:disabled{opacity:.4}button:active{transform:translateY(2px);border-bottom-width:2px}.menus{display:grid;grid-template-columns:1fr;gap:6px}.dish{background:#4a382a;border-radius:7px;padding:8px;font-size:11px;line-height:1.45}.dish b{color:#ffdb9a}.price{float:right;color:#bfe58c;font-weight:900}#log{font-size:11px;line-height:1.6;max-height:95px;overflow:auto;color:#ead6bd}.hint{font-size:10px;color:#cdb493;margin-top:7px}footer{text-align:center;color:#a88c6f;font-size:10px;padding:12px}
 @media(min-width:620px){.buttons{grid-template-columns:repeat(4,1fr)}.menus{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(4,1fr)}}
@@ -28,6 +28,35 @@ button{min-height:42px;touch-action:manipulation}
 .bottom-nav button.active{background:linear-gradient(#d29a4e,#95602c);color:#fff8e8}
 .panel.focused{outline:2px solid #e8b96c;box-shadow:0 0 0 4px #e8b96c22,0 5px 14px #0007}
 @media(min-width:700px){.bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(700px,100%);border-radius:13px 13px 0 0}}
+/* V2.10: identidad visual inspirada en la bandera y el paisaje de Canarias */
+:root{color-scheme:dark}
+body{background:radial-gradient(ellipse at top,#174b70 0,#102b43 58%,#091a2a 100%);color:#f5f7f2}
+header{background:linear-gradient(135deg,#15558a,#103454);border-bottom:3px solid #f3c928}
+h1{color:#ffdf45;text-shadow:2px 2px #09233b}
+.tag{color:#e4f3ff}
+.music-btn{background:linear-gradient(#2b8a9a,#176078);border-color:#f3c928}
+.day{background:#0d2a43;border-color:#f3c928;color:#fff}
+.stats{background:#103454}
+.stat{background:linear-gradient(145deg,#1c6692,#124568);border-color:#e2c43b;color:#fff}
+.stat b{color:#ffe15a}
+.scene{border-color:#f3c928;box-shadow:0 5px 0 #0a253b}
+.panel{background:linear-gradient(145deg,#164c70,#103653);border-color:#3988ad}
+.panel h2{color:#ffdf45}
+button{background:linear-gradient(#2685b4,#15547f);color:#fff;border-color:#f0cf45;border-bottom-color:#0b3453}
+.dish,.order-card{background:#1d5b7e;color:#f4f8fb}
+.dish b{color:#ffe15a}
+.order-card{border-color:#65b7d0}
+.order-card.active{border-color:#ffdf45;background:#236f91}
+.order-lines{color:#f1f7fb}
+.order-status{color:#ffe27a}
+.price{color:#ffdf45}
+#log{color:#e1f3ff}
+.hint{color:#c5e5f3}
+footer{color:#b8d6e5}
+.bottom-nav{background:linear-gradient(#155783,#0b2942);border-top-color:#f3c928}
+.bottom-nav button{background:linear-gradient(#247eaa,#155176);border-color:#75bad2}
+.bottom-nav button.active{background:linear-gradient(#f3d33e,#d39d20);color:#15324a}
+.panel.focused{outline-color:#f3d33e;box-shadow:0 0 0 4px #f3d33e22,0 5px 14px #0007}
 </style></head><body>
 <header><div><h1>🍷 GUACHINCHE DE DANY</h1><div class="tag">Un rincón canario · Tenerife</div></div><div class="header-actions"><button id="musicBtn" class="music-btn" aria-pressed="false">🎶 Activar isa</button><div class="day">📅 DÍA <span id="day">1</span></div></div></header>
 <div class="stats"><div class="stat">💶 CAJA<b id="cash">350 €</b></div><div class="stat">🥔 INGREDIENTES<b id="stock">8</b></div><div class="stat">⭐ FAMA<b id="rep">1</b></div><div class="stat">👥 CLIENTES<b id="customers">0</b></div></div>
