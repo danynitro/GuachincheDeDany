@@ -58,6 +58,33 @@ footer{color:#b8d6e5}
 .bottom-nav button.active{background:linear-gradient(#f3d33e,#d39d20);color:#15324a}
 .panel.focused{outline-color:#f3d33e;box-shadow:0 0 0 4px #f3d33e22,0 5px 14px #0007}
 ${styleInsert}.update-banner{display:none;margin:8px auto;padding:10px;max-width:980px;background:#174b70;border:2px solid #f3c928;border-radius:10px;color:#fff;text-align:center;font-size:14px}.update-banner button{display:block;margin:8px auto}.update-banner small{display:block;color:#e1f3ff}
+
+/* V3.0 — rediseño inspirado en la referencia visual del usuario */
+:root{color-scheme:dark}
+body{background:#21170f;color:#fff4df;font-family:system-ui,Arial,sans-serif}
+header{background:linear-gradient(180deg,#292523,#111820);border:2px solid #8b633f;border-bottom:4px solid #bd7840;border-radius:0 0 14px 14px;padding:9px 12px}
+h1{color:#fff;text-shadow:2px 2px 2px #000;font-size:clamp(16px,4vw,23px);letter-spacing:.4px}
+.tag{color:#f1cf9a;font-size:11px}
+.day{background:linear-gradient(#353535,#171717);border:2px solid #b58a5a;border-radius:10px;color:#ffe3a5;font-size:13px}
+.stats{background:linear-gradient(#26313b,#111820);border-top:1px solid #c28b4d;border-bottom:2px solid #9b6739;gap:5px}
+.stat{background:linear-gradient(145deg,#33312e,#171717);border:2px solid #987044;border-radius:10px;box-shadow:inset 0 1px #ffffff25,0 3px #080808;font-size:10px;color:#f7e8cf}
+.stat b{font-size:clamp(14px,3.8vw,19px);color:#ffdf74}
+main{max-width:1100px;padding:8px}
+.scene{border:5px solid #a96e3c;border-radius:13px;background:#684a31;box-shadow:inset 0 0 0 2px #f0c27a,0 6px 0 #120d09,0 12px 22px #0009}
+canvas{image-rendering:pixelated}
+.panel{background:linear-gradient(145deg,#624027,#352319 65%,#24170f);border:2px solid #b17b48;border-radius:12px;box-shadow:inset 0 1px #f8d49a55,0 5px 0 #130d08,0 8px 15px #0008;padding:12px}
+.panel h2{color:#ffe0a0;text-shadow:1px 2px #24150c;border-bottom:1px solid #b17b4866;padding-bottom:7px}
+button{background:linear-gradient(180deg,#d59a58 0%,#a96835 48%,#704020 100%);border:2px solid #efc17e;border-bottom:5px solid #4b2b17;border-radius:10px;color:#fff8e9;text-shadow:1px 2px #422411;box-shadow:inset 0 1px #fff8d855,0 2px 4px #0007;font-size:12px}
+button:active{transform:translateY(2px);filter:brightness(1.12)}
+.dish,.order-card{background:linear-gradient(145deg,#775237,#49301f);border:1px solid #bd8954;color:#fff1d9;border-radius:9px}
+.dish b{color:#ffe0a0}.order-card.active{background:#80572f;border:2px solid #ffd56d}
+.order-lines{color:#fff0d6}.price{color:#c9ed91}
+#log{color:#f7e4c7}.hint{color:#e2c39c}
+.bottom-nav{background:linear-gradient(#4a3020,#1d130d);border-top:3px solid #bd8549;box-shadow:0 -5px 18px #000b;padding:7px 5px calc(7px + env(safe-area-inset-bottom))}
+.bottom-nav button{background:linear-gradient(#c18a4c,#704324);border:2px solid #e4b778;border-bottom:5px solid #4c2c17;border-radius:9px;min-height:52px;color:#fff5e5;text-shadow:1px 1px #3b2413;font-size:10px}
+.bottom-nav button.active{background:linear-gradient(#f0c66d,#a86b32);color:#24170e;border-color:#ffe2a0}
+.update-banner{background:linear-gradient(145deg,#654327,#332116);border:2px solid #e1b16d;color:#fff2db}
+footer{color:#d1ad7e}
 </style></head><body>
 <header><div><h1>🍷 GUACHINCHE DE DANY</h1><div class="tag">Un rincón canario · Tenerife</div></div><div class="header-actions"><div class="day">📅 DÍA <span id="day">1</span></div></div></header>
 <div id="updateBanner" class="update-banner"><div id="updateMessage">Hay una actualización disponible.</div><button id="updateButton">⬇️ Descargar e instalar actualización</button><small>Android te pedirá confirmar la instalación.</small></div>
@@ -85,7 +112,7 @@ ${styleInsert}.update-banner{display:none;margin:8px auto;padding:10px;max-width
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v2.21 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v3.0 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=5,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
