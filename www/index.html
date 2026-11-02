@@ -84,7 +84,7 @@ footer{color:#b8d6e5}
 </nav><footer>Guachinche de Dany v2.12 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
-let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=8,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
+let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=15,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
 const colors=['#d34f35','#315f9a','#527c42','#a44d83','#d18a32','#e6dfd1'];const caps=['flag','straw','black','blue'];const outfits=['#315b88','#bd4936','#416c49','#eee0c7','#7d4e91'];
 function save(){try{localStorage.setItem('gdd-save',JSON.stringify({cash,rep,tables,staff,stock,day,served,upgraded,lastCourierDay,orders,customers,nextOrderId,activeOrderId}))}catch(e){}}
 function load(){try{let x=JSON.parse(localStorage.getItem('gdd-save'));if(x){cash=x.cash??cash;rep=x.rep??rep;tables=x.tables??tables;staff=x.staff??staff;stock=x.stock??stock;day=x.day??day;served=x.served??served;upgraded=x.upgraded??upgraded;lastCourierDay=x.lastCourierDay??0;orders=Array.isArray(x.orders)?x.orders:[];customers=Array.isArray(x.customers)?x.customers:[];nextOrderId=x.nextOrderId??1;activeOrderId=x.activeOrderId??(orders[0]?.id??null)}}catch(e){}}
@@ -128,7 +128,7 @@ function updateWaiters(){
   }
   const home=waiterHome(i),dest=w.mode==='going'||w.mode==='visiting'?tableSpot(w.table):home;
   if(w.mode==='idle')return;
-  const dx=dest.x-w.x,dy=dest.y-w.y,dist=Math.hypot(dx,dy),speed=3.2;
+  const dx=dest.x-w.x,dy=dest.y-w.y,dist=Math.hypot(dx,dy),speed=6;
   if(dist>speed){w.x+=dx/dist*speed;w.y+=dy/dist*speed;}
   else {w.x=dest.x;w.y=dest.y;
    if(w.mode==='going'){w.mode='visiting';w.wait=3;addLog('🧑‍🍳 El camarero '+(i+1)+' ha llegado a la mesa '+w.table+'.');}
@@ -258,7 +258,7 @@ function updateUI(){
 function update(){
  tick++;
  updateWaiters();
- if(orderCooldown>0)orderCooldown--;if(orderCooldown<=0&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]};customers.push(customer);makeOrder(free);customer.orderId=orders[orders.length-1].id;orderCooldown=18;}}
+ if(orderCooldown>0)orderCooldown--;if(orderCooldown<=0&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]};customers.push(customer);makeOrder(free);customer.orderId=orders[orders.length-1].id;orderCooldown=30;}}
  if(tick%60===0){day++;let wages=staff*4;cash=Math.max(0,cash-wages);addLog('📅 Día '+day+'. Nóminas: '+wages+' €.')}
  // Emergency delivery prevents the business from becoming permanently stuck.
  if(stock===0&&cash<35&&lastCourierDay!==day)courier();
