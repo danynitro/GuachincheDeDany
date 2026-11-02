@@ -116,7 +116,7 @@ footer{color:#d9efff}
 <div class="scene"><canvas id="game" width="640" height="400" aria-label="Guachinche canario con clientes y camareros"></canvas><div class="notice" id="notice">¡Tu pedido está aquí!</div></div>
 <div class="panel" id="managePanel"><h2>🛠️ GESTIONA TU GUACHINCHE</h2><div class="buttons">
 <button id="tableBtn">🪑 Comprar mesa · 60 €</button><button id="staffBtn">🧑‍🍳 Contratar camarero · 100 €</button><button id="stockBtn">📦 Ingredientes · 35 €</button><button id="upgradeBtn">🏡 Mejorar local · 180 €</button>
-</div><div class="hint">Si te quedas sin dinero y sin ingredientes, aparecerá un repartidor de Glovo con un pedido de emergencia.</div><div class="buttons" style="margin-top:8px"><button id="exportSaveBtn">💾 Exportar partida</button><button id="importSaveBtn">📂 Importar partida</button><input id="saveFileInput" type="file" accept="application/json,.json" style="display:none"></div><div class="hint">Guarda una copia antes de cambiar de móvil o reinstalar.</div></div>
+</div><div class="hint">Si te quedas sin dinero y sin ingredientes, aparecerá un repartidor de Glovo con un pedido de emergencia.</div></div>
 
 <div class="panel focused" id="ordersPanel"><h2>🧾 PEDIDOS DE LAS MESAS</h2><div id="orders" class="order-grid"><div class="dish">Esperando a los primeros clientes...</div></div></div>
 <div class="panel" id="kitchenPanel"><h2>👨‍🍳 COCINA · PREPARA TÚ LOS PLATOS</h2><div id="activeOrderInfo" class="dish">Selecciona un pedido para empezar.</div><div class="kitchen-grid" id="kitchenButtons"></div><div id="kitchenStatus" class="order-status">Al completar todos los platos, el pedido se entrega y se cobra automáticamente.</div></div>
@@ -142,30 +142,6 @@ let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderI
 const colors=['#d34f35','#315f9a','#527c42','#a44d83','#d18a32','#e6dfd1'];const caps=['flag','straw','black','blue'];const outfits=['#315b88','#bd4936','#416c49','#eee0c7','#7d4e91'];
 function save(){try{localStorage.setItem('gdd-save',JSON.stringify({cash,rep,tables,staff,stock,day,served,upgraded,lastCourierDay,orders,customers,nextOrderId,activeOrderId}))}catch(e){}}
 
-function exportSave(){
- try{
-  save();
-  const data=localStorage.getItem('gdd-save');
-  if(!data){alert('No hay ninguna partida guardada.');return;}
-  const blob=new Blob([JSON.stringify({game:'Guachinche de Dany',format:1,exportedAt:new Date().toISOString(),save:JSON.parse(data)},null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='guachinche-de-dany-partida.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
- }catch(e){alert('No se pudo exportar la partida.');}
-}
-function importSaveFile(file){
- if(!file)return;
- const reader=new FileReader();
- reader.onload=()=>{
-  try{
-   const data=JSON.parse(reader.result),payload=data&&data.save?data.save:data;
-   if(!payload||typeof payload!=='object'||!('cash' in payload)||!('orders' in payload))throw new Error('invalid');
-   if(!confirm('¿Quieres sustituir la partida actual por la copia seleccionada?'))return;
-   localStorage.setItem('gdd-save',JSON.stringify(payload));
-   location.reload();
-  }catch(e){alert('El archivo no es una copia válida de Guachinche de Dany.');}
- };
- reader.readAsText(file);
-}
 function load(){try{let x=JSON.parse(localStorage.getItem('gdd-save'));if(x){cash=x.cash??cash;rep=x.rep??rep;tables=x.tables??tables;staff=x.staff??staff;stock=x.stock??stock;day=x.day??day;served=x.served??served;upgraded=x.upgraded??upgraded;lastCourierDay=x.lastCourierDay??0;orders=Array.isArray(x.orders)?x.orders.slice(0,3):[];customers=Array.isArray(x.customers)?x.customers.filter(p=>orders.some(o=>o.id===p.orderId)):[];nextOrderId=x.nextOrderId??1;activeOrderId=x.activeOrderId??(orders[0]?.id??null)}}catch(e){}}
 function rect(x,y,w,h,c){g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
 function outline(x,y,w,h,c='#3b281c'){g.strokeStyle=c;g.lineWidth=2;g.strokeRect(x,y,w,h)}
@@ -193,10 +169,10 @@ function person(x,y,o={},scale=1){
   rr(-6,3,12,1,1,'#aaa49a',null);rr(-5,8,10,5,1,'#292d32','#8b8174',.7);
   el(5,5,1.1,1.1,'#e5c27d',null);
  }else if(hat==='waiter'){
-  rr(-9,0,18,16,3,gr(-9,0,18,16,'#123c58','#071d2b'));
-  rr(-8,-2,16,17,3,gr(-8,-2,16,17,'#173f5b','#09263b'));
-  rr(-6,1,12,1,1,'#d8b66a',null);rr(-5,5,10,1,1,'#d8b66a',null);
-  rr(-5,9,10,5,1,'#102d42','#d8b66a',.7);el(0,11,1,1,'#f4d58a',null);
+  rr(-9,0,18,16,3,gr(-9,0,18,16,'#ffd928','#d69b00'));
+  rr(-8,-2,16,17,3,gr(-8,-2,16,17,'#ffe45a','#d69b00'));
+  rr(-6,1,12,1,1,'#fff2a6',null);rr(-5,5,10,1,1,'#fff2a6',null);
+  rr(-5,9,10,5,1,'#e8aa00','#fff0a0',.7);el(0,11,1,1,'#fff5bd',null);
  }else{
   rr(-9,0,18,16,3,gr(-9,0,18,16,shirt,'#b6a18b'));
   rr(-1,1,2,13,1,'#ffffff88',null);el(0,4,1,1,'#8e6b4d',null);el(0,9,1,1,'#8e6b4d',null);
@@ -232,9 +208,9 @@ function person(x,y,o={},scale=1){
   rr(-8,-49,17,12,5,gr(-8,-49,17,12,'#f3dfb3','#c1a77b'));
   rr(-14,-37,28,2,1,'#f0c62e',null);rr(-2,-47,5,8,1,'#2466ad',null);
  }else if(hat==='waiter'){
-  rr(-13,-40,26,7,3,gr(-13,-40,26,7,'#173f5b','#09263b'));
-  rr(-8,-49,17,12,5,gr(-8,-49,17,12,'#1e5274','#0b2d48'));
-  rr(-14,-37,28,2,1,'#d8b66a',null);rr(-2,-47,5,5,1,'#f4d58a',null);
+  rr(-13,-40,26,7,3,gr(-13,-40,26,7,'#ffd928','#d69b00'));
+  rr(-8,-49,17,12,5,gr(-8,-49,17,12,'#ffe45a','#d69b00'));
+  rr(-14,-37,28,2,1,'#fff2a6',null);rr(-2,-47,5,5,1,'#fff5bd',null);
  }else{
   rr(-14,-40,28,7,3,'#f4eee0');rr(-8,-49,17,12,5,'#f4eee0');
   rr(-14,-40,9,6,1,'#fff',null);rr(-5,-40,9,6,1,'#2466ad',null);rr(4,-40,10,6,1,'#f1c62d',null);
@@ -324,7 +300,7 @@ function drawScene(){
  // clientes en las mesas
  customers.forEach((p,i)=>{if(!spots.length)return;let sp=spots[p.table%spots.length]||spots[0];person(sp.x-12,sp.y-20,{shirt:p.shirt,hat:p.hat,skin:p.skin,body:p.body,pants:p.pants},.86);if(i%2===0)person(sp.x+20,sp.y-17,{shirt:p.shirt2,hat:p.hat2,skin:p.skin2||'#d99a72',body:p.body2,pants:p.pants2},.8)});
  // camareros
- waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#f5ead7',hat:'waiter',skin:'#c9855d',pants:'#202b35'},1.18);g.save();g.fillStyle='#123c58';g.strokeStyle='#d8b66a';g.lineWidth=1;g.beginPath();g.roundRect(w.x-23,w.y-57,46,12,4);g.fill();g.stroke();g.fillStyle='#fff0d5';g.font='bold 7px system-ui';g.textAlign='center';g.fillText('CAMARERO',w.x,w.y-48);g.restore();});
+ waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#ffdf32',hat:'waiter',skin:'#c9855d',pants:'#202b35'},1.18);g.save();g.fillStyle='#123c58';g.strokeStyle='#d8b66a';g.lineWidth=1;g.beginPath();g.roundRect(w.x-23,w.y-57,46,12,4);g.fill();g.stroke();g.fillStyle='#fff0d5';g.font='bold 7px system-ui';g.textAlign='center';g.fillText('CAMARERO',w.x,w.y-48);g.restore();});
  // Bocadillos aleatorios con expresiones canarias
  if(chatBubble){
   if(chatBubble.table>0){const sp=spots[(chatBubble.table-1)%spots.length];if(sp)drawChatBubble(sp.x-8,sp.y-48,chatBubble.text);}
@@ -475,7 +451,7 @@ $('tableBtn').onclick=()=>{if(cash>=60&&tables<8){cash-=60;tables++;addLog('🪑
 $('staffBtn').onclick=()=>{if(cash>=100&&staff<5){cash-=100;staff++;addLog('🧑‍🍳 Has contratado a un camarero.')}updateUI();drawScene();save()};
 $('stockBtn').onclick=()=>{if(cash>=35){cash-=35;stock+=12;addLog('📦 Has comprado 12 unidades de ingredientes.')}updateUI();drawScene();save()};
 $('upgradeBtn').onclick=()=>{if(cash>=180&&!upgraded){cash-=180;upgraded=true;rep+=2;addLog('🏡 ¡Has mejorado el local!')}updateUI();drawScene();save()};
-$('exportSaveBtn').onclick=exportSave;$('importSaveBtn').onclick=()=>$('saveFileInput').click();$('saveFileInput').onchange=e=>importSaveFile(e.target.files[0]);
+
 load();if(!orders.length){customers=[];orderCooldown=3;}else{customers=customers.filter(p=>orders.some(o=>o.id===p.orderId));}updateUI();renderOrders();drawScene();setInterval(update,1000);
 
 // V2.13: timple canario instrumental, arranca con la primera interacción del usuario.
