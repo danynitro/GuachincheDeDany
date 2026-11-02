@@ -11,7 +11,7 @@
 .order-lines{line-height:1.7;color:#f6e6ce}
 .kitchen-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
 .kitchen-grid button{min-height:54px}
-.order-status{font-size:11px;color:#cfe9a8;margin-top:5px}
+.order-status{font-size:11px;color:#cfe9a8;margin-top:5px}.cook-track{height:13px;background:#0b263b;border:1px solid #e3c34b;border-radius:9px;overflow:hidden;margin-top:7px}.cook-bar{height:100%;background:linear-gradient(90deg,#1766ad,#f2cc43);transition:width .1s linear}
 @media(min-width:620px){.order-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.kitchen-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
 /* V2.5: interfaz de gestión móvil */
@@ -81,7 +81,7 @@ footer{color:#b8d6e5}
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v2.13 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v2.14 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=15,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
@@ -236,11 +236,28 @@ function renderOrders(){
  $('kitchenStatus').textContent=o?'Ingredientes disponibles: '+stock+' · Al preparar el último plato, se entrega y cobra automáticamente.':'Selecciona un pedido para cocinar.';
 }
 window.selectOrder=id=>{activeOrderId=id;renderOrders()};
+let kitchenProgress=0,kitchenTimer=null,kitchenBusy=false;
+function finishDish(orderId,dishId){
+ const o=orders.find(x=>x.id===orderId),item=o&&o.items.find(i=>i.id===dishId);
+ kitchenBusy=false;kitchenProgress=0;kitchenTimer=null;
+ if(!o||!item||item.ready>=item.qty)return;
+ item.ready++;stock--;addLog('👨‍🍳 Mesa '+o.table+': preparado '+dishes.find(d=>d.id===dishId).name+'.');
+ if(o.items.every(i=>i.ready>=i.qty)){activeOrderId=o.id;deliverOrder();return;}
+ updateUI();renderOrders();save();
+}
 window.prepareDish=id=>{
  const o=currentOrder(),item=o&&o.items.find(i=>i.id===id);
- if(!item||item.ready>=item.qty)return;
+ if(!item||item.ready>=item.qty||kitchenBusy)return;
  if(stock<1){addLog('⚠️ No quedan ingredientes. Pide suministros a Glovo o compra más.');return}
- item.ready++;stock--;addLog('👨‍🍳 Mesa '+o.table+': preparado '+dishes.find(d=>d.id===id).name+'.');if(o.items.every(i=>i.ready>=i.qty)){deliverOrder();return;}updateUI();renderOrders();save();
+ kitchenBusy=true;kitchenProgress=1;
+ const orderId=o.id;
+ $('kitchenStatus').innerHTML='<div>👨‍🍳 Preparando '+dishes.find(d=>d.id===id).name+'… <b id="cookPercent">1%</b></div><div class="cook-track"><div id="cookBar" class="cook-bar" style="width:1%"></div></div>';
+ renderOrders();
+ kitchenTimer=setInterval(()=>{
+  kitchenProgress=Math.min(100,kitchenProgress+2);
+  const p=$('cookPercent'),b=$('cookBar');if(p)p.textContent=kitchenProgress+'%';if(b)b.style.width=kitchenProgress+'%';
+  if(kitchenProgress>=100)finishDish(orderId,id);
+ },100);
 };
 function deliverOrder(){
  const o=currentOrder();if(!o||!o.items.every(i=>i.ready>=i.qty))return;
