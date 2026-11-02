@@ -52,7 +52,7 @@ button{min-height:42px;touch-action:manipulation}
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v2.7 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v2.8 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
@@ -93,6 +93,28 @@ function drawScene(){
  // courtyard wall and tiled roof
  rect(8,8,624,112,'#d6c39e');for(let x=8;x<632;x+=32){rect(x,8,29,22,'#a94e32');rect(x+5,29,26,12,'#bf6840')}
  rect(8,111,624,8,'#5c3925');
+ // Decoración canaria desbloqueada al mejorar el local
+ if(upgraded){
+  // Cuadro de paisaje canario: Teide y mar
+  rect(92,39,58,48,'#704326');outline(92,39,58,48,'#e8bd75');
+  rect(98,45,46,36,'#8bc0c5');rect(98,63,46,18,'#326f86');
+  // Teide
+  rect(112,51,17,20,'#756b60');rect(116,45,9,8,'#e8e0d1');rect(109,61,25,10,'#547a48');
+  // Sol
+  rect(133,49,5,5,'#f4cf64');
+  // Pintadera canaria enmarcada
+  rect(552,39,54,48,'#704326');outline(552,39,54,48,'#e8bd75');
+  rect(558,45,42,36,'#e7d3a7');
+  // Geometric pintadera motif
+  rect(575,51,8,24,'#a64d32');rect(567,59,24,8,'#a64d32');
+  rect(571,55,16,16,'#e7d3a7');rect(575,59,8,8,'#a64d32');
+  rect(579,47,2,4,'#a64d32');rect(579,75,2,4,'#a64d32');
+  rect(563,63,4,2,'#a64d32');rect(591,63,4,2,'#a64d32');
+  // Plato decorativo y bandera
+  rect(157,47,25,25,'#e7d3a7');outline(157,47,25,25,'#704326');
+  rect(165,51,9,17,'#a64d32');rect(161,55,17,9,'#a64d32');
+  drawFlag(164,91,32,18);
+ }
  // hanging sign
  rect(205,25,230,55,'#58351e');outline(205,25,230,55,'#e0ad63');text('GUACHINCHE DE DANY',220,49,16,'#ffdf9c');drawFlag(390,34,30,18);
  // window / kitchen counter
