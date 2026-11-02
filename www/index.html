@@ -166,7 +166,7 @@ function importSaveFile(file){
  };
  reader.readAsText(file);
 }
-function load(){try{let x=JSON.parse(localStorage.getItem('gdd-save'));if(x){cash=x.cash??cash;rep=x.rep??rep;tables=x.tables??tables;staff=x.staff??staff;stock=x.stock??stock;day=x.day??day;served=x.served??served;upgraded=x.upgraded??upgraded;lastCourierDay=x.lastCourierDay??0;orders=Array.isArray(x.orders)?x.orders:[];customers=Array.isArray(x.customers)?x.customers:[];nextOrderId=x.nextOrderId??1;activeOrderId=x.activeOrderId??(orders[0]?.id??null)}}catch(e){}}
+function load(){try{let x=JSON.parse(localStorage.getItem('gdd-save'));if(x){cash=x.cash??cash;rep=x.rep??rep;tables=x.tables??tables;staff=x.staff??staff;stock=x.stock??stock;day=x.day??day;served=x.served??served;upgraded=x.upgraded??upgraded;lastCourierDay=x.lastCourierDay??0;orders=Array.isArray(x.orders)?x.orders.slice(0,3):[];customers=Array.isArray(x.customers)?x.customers.filter(p=>orders.some(o=>o.id===p.orderId)):[];nextOrderId=x.nextOrderId??1;activeOrderId=x.activeOrderId??(orders[0]?.id??null)}}catch(e){}}
 function rect(x,y,w,h,c){g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
 function outline(x,y,w,h,c='#3b281c'){g.strokeStyle=c;g.lineWidth=2;g.strokeRect(x,y,w,h)}
 function text(t,x,y,size=10,color='#fff1dc'){g.font='bold '+size+'px monospace';g.fillStyle=color;g.fillText(t,x,y)}
@@ -244,8 +244,8 @@ function table(x,y,n){
  for(let i=0;i<5;i++)for(let j=0;j<3;j++)if((i+j)%2===0)rect(x-11+i*8,y-4+j*8,8,8,'#b83e31');
  rect(x+1,y+1,8,6,'#e7d2a9');rect(x+12,y+3,5,5,'#7a9a46');text(''+n,x-1,y+35,9,'#4b3020');
 }
-function waiterHome(i){return {x:470+(i%2)*42,y:255+Math.floor(i/2)*48};}
-function tableSpot(n){return {x:125+((n-1)%4)*126,y:190+Math.floor((n-1)/4)*125};}
+function waiterHome(i){return {x:535-(i%2)*48,y:270+Math.floor(i/2)*42};}
+function tableSpot(n){return [{x:145,y:306},{x:325,y:306},{x:490,y:309},{x:95,y:365},{x:265,y:365},{x:440,y:365},{x:180,y:250},{x:365,y:250}][(n-1)%8]||{x:145,y:306};}
 function updateWaiters(){
  while(waiters.length<staff){const p=waiterHome(waiters.length);waiters.push({x:p.x,y:p.y,mode:'idle',table:0,wait:0,lastOrderId:0});}
  waiters.length=staff;
@@ -301,12 +301,21 @@ function drawScene(){
  drawFlag(57,236,27,17);
  // mesas con manteles de cuadros rojos y blancos
  const spots=[];for(let i=0;i<Math.min(tables,8);i++){let pos=[{x:145,y:306},{x:325,y:306},{x:490,y:309},{x:95,y:365},{x:265,y:365},{x:440,y:365},{x:180,y:250},{x:365,y:250}][i];spots.push(pos);table(pos.x,pos.y,i+1);rect(pos.x-27,pos.y-12,54,8,'#fff0df');for(let k=0;k<6;k++)rect(pos.x-25+k*9,pos.y-12,4,8,'#c83d32');rect(pos.x-27,pos.y-4,54,4,'#fff0df')}
+ // Decoración visible del local mejorado
+ if(upgraded){
+  // Guirnalda de banderines canarios sobre el patio
+  for(let i=0;i<9;i++){let x=72+i*61,y=148+(i%2)*5;rect(x,y,20,3,'#57351f');rect(x+2,y+3,15,11,i%3===0?'#f4c928':i%3===1?'#fff0d5':'#1766ad');}
+  // Macetas con flores junto a las paredes y faroles adicionales
+  for(const x of [72,155,475,610]){rect(x-9,248,20,17,'#a94f32');rect(x-12,245,26,5,'#6e3928');rect(x-3,228,5,19,'#286b3b');rect(x+2,224,5,23,'#347e43');rect(x-7,222,6,6,'#e2a32e');rect(x+3,218,6,6,'#d84b70');}
+  rect(75,112,8,27,'#392b25');rect(69,136,20,9,'#f4c45a');rect(548,112,8,27,'#392b25');rect(542,136,20,9,'#f4c45a');
+  text('LOCAL REFORMADO',245,292,11,'#f4c928');
+ }
  // Dany atendiendo en la barra
  person(337,213,{shirt:'#eee0c7',hat:'black',skin:'#d99a72'},1.25);
  // clientes en las mesas
  customers.forEach((p,i)=>{if(!spots.length)return;let sp=spots[p.table%spots.length]||spots[0];person(sp.x-12,sp.y-20,{shirt:p.shirt,hat:p.hat,skin:p.skin},.86);if(i%2===0)person(sp.x+20,sp.y-17,{shirt:p.shirt2,hat:p.hat2,skin:'#d99a72'},.8)});
  // camareros
- waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#f0dfc7',hat:i%2?'blue':'flag'},.9)});
+ waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#176b86',hat:'blue',skin:'#c9855d'},1.18);g.save();g.fillStyle='#f4c928';g.strokeStyle='#30231d';g.lineWidth=1.5;g.beginPath();g.roundRect(w.x+10,w.y-15,19,5,2);g.fill();g.stroke();g.fillStyle='#fff0d5';g.font='bold 8px system-ui';g.textAlign='center';g.fillText('CAMARERO',w.x,w.y-37);g.restore();});
  // Bocadillos aleatorios con expresiones canarias
  if(chatBubble){
   if(chatBubble.table>0){const sp=spots[(chatBubble.table-1)%spots.length];if(sp)drawChatBubble(sp.x-8,sp.y-48,chatBubble.text);}
@@ -446,7 +455,7 @@ function update(){
   chatCooldown=7+Math.floor(Math.random()*8);
  }
  updateWaiters();
- if(orderCooldown>0)orderCooldown--;if(orderCooldown<=0&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]};customers.push(customer);makeOrder(free);customer.orderId=orders[orders.length-1].id;orderCooldown=12;}}
+ if(orderCooldown>0)orderCooldown--;if(orderCooldown<=0&&orders.length<3&&orders.length<Math.min(tables,8)){let occupied=orders.map(o=>o.table);let free=Array.from({length:Math.min(tables,8)},(_,i)=>i+1).find(n=>!occupied.includes(n));if(free){let customer={table:free,shirt:outfits[Math.floor(Math.random()*outfits.length)],hat:caps[Math.floor(Math.random()*caps.length)],skin:['#e8b38a','#c9855d','#f0c7a1'][Math.floor(Math.random()*3)],shirt2:outfits[Math.floor(Math.random()*outfits.length)],hat2:caps[Math.floor(Math.random()*caps.length)]};customers.push(customer);makeOrder(free);customer.orderId=orders[orders.length-1].id;orderCooldown=12;}}
  if(tick%60===0){day++;let wages=staff*4;cash=Math.max(0,cash-wages);addLog('📅 Día '+day+'. Nóminas: '+wages+' €.')}
  // Emergency delivery prevents the business from becoming permanently stuck.
  if(stock===0&&cash<35&&lastCourierDay!==day)courier();
@@ -487,7 +496,7 @@ async function startIsa(){
 ['pointerdown','touchstart','click'].forEach(evt=>document.addEventListener(evt,startIsa,{once:true,passive:true}));
 
 // V2.18: comprobación de actualizaciones publicadas en GitHub Releases.
-const APP_VERSION='3.0.7';
+const APP_VERSION='3.0.8';
 async function checkForUpdates(){
  $('updateBanner').style.display='none';
  try{
