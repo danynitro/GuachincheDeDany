@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      APP_VERSION: v2.19
+      APP_VERSION: v2.20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
