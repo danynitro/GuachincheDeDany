@@ -57,9 +57,9 @@ footer{color:#b8d6e5}
 .bottom-nav button{background:linear-gradient(#247eaa,#155176);border-color:#75bad2}
 .bottom-nav button.active{background:linear-gradient(#f3d33e,#d39d20);color:#15324a}
 .panel.focused{outline-color:#f3d33e;box-shadow:0 0 0 4px #f3d33e22,0 5px 14px #0007}
-</style></head><body>
+${styleInsert}</style></head><body>
 <header><div><h1>🍷 GUACHINCHE DE DANY</h1><div class="tag">Un rincón canario · Tenerife</div></div><div class="header-actions"><div class="day">📅 DÍA <span id="day">1</span></div></div></header>
-<div class="stats"><div class="stat">💶 CAJA<b id="cash">350 €</b></div><div class="stat">🥔 INGREDIENTES<b id="stock">8</b></div><div class="stat">⭐ FAMA<b id="rep">1</b></div><div class="stat">👥 CLIENTES<b id="customers">0</b></div></div>
+<div id="updateBanner" class="update-banner"><div id="updateMessage">Hay una actualización disponible.</div><button id="updateButton">⬇️ Descargar e instalar actualización</button><small>Android te pedirá confirmar la instalación.</small></div>\n<div class="stats"><div class="stat">💶 CAJA<b id="cash">350 €</b></div><div class="stat">🥔 INGREDIENTES<b id="stock">8</b></div><div class="stat">⭐ FAMA<b id="rep">1</b></div><div class="stat">👥 CLIENTES<b id="customers">0</b></div></div>
 <main>
 <div class="scene"><canvas id="game" width="640" height="400" aria-label="Guachinche canario con clientes y camareros"></canvas><div class="notice" id="notice">¡Tu pedido está aquí!</div></div>
 <div class="panel" id="managePanel"><h2>🛠️ GESTIONA TU GUACHINCHE</h2><div class="buttons">
@@ -341,7 +341,31 @@ async function startIsa(){
  }catch(e){}
 }
 ['pointerdown','touchstart','click'].forEach(evt=>document.addEventListener(evt,startIsa,{once:true,passive:true}));
-document.querySelectorAll('.bottom-nav button').forEach(btn=>btn.addEventListener('click',()=>{
+
+// V2.18: comprobación de actualizaciones publicadas en GitHub Releases.
+const APP_VERSION='2.18';
+async function checkForUpdates(){
+ try{
+  const response=await fetch('https://api.github.com/repos/danynitro/GuachincheDeDany/releases/latest',{cache:'no-store'});
+  if(!response.ok)return;
+  const release=await response.json();
+  const latest=(release.tag_name||'').replace(/^v/,'');
+  const newer=latest.split('.').map(Number),current=APP_VERSION.split('.').map(Number);
+  let isNewer=false;
+  for(let i=0;i<Math.max(newer.length,current.length);i++){
+   const a=newer[i]||0,b=current[i]||0;if(a>b){isNewer=true;break;}if(a<b)break;
+  }
+  if(!isNewer)return;
+  const apk=(release.assets||[]).find(a=>a.name.endsWith('.apk'));
+  if(!apk)return;
+  $('updateMessage').textContent='¡Nueva versión '+release.tag_name+' disponible!';
+  $('updateBanner').style.display='block';
+  $('updateButton').onclick=()=>{window.open(apk.browser_download_url,'_system');};
+ }catch(e){/* Sin conexión: el juego sigue funcionando offline. */}
+}
+setTimeout(checkForUpdates,2500);
+setInterval(checkForUpdates,6*60*60*1000);
+\ndocument.querySelectorAll('.bottom-nav button').forEach(btn=>btn.addEventListener('click',()=>{
  const target=$(btn.dataset.target);
  document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.toggle('active',b===btn));
  document.querySelectorAll('main .panel').forEach(p=>p.classList.remove('focused'));
