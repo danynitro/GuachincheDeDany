@@ -8,11 +8,15 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: gdd-android-build
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      APP_VERSION: v2.21
+      APP_VERSION: v3.0
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,7 +35,7 @@ jobs:
         run: npx cap add android
       - name: Sync web assets
         run: npx cap sync android
-      - name: Restore permanent signing key
+      - name: Restore configured signing key
         env:
           SIGNING_KEY: ${{ secrets.GDD_DEBUG_KEYSTORE_BASE64 }}
         run: |
