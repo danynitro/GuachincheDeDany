@@ -90,12 +90,12 @@ function table(x,y,n){
 function waiterHome(i){return {x:470+(i%2)*42,y:255+Math.floor(i/2)*48};}
 function tableSpot(n){return {x:125+((n-1)%4)*126,y:190+Math.floor((n-1)/4)*125};}
 function updateWaiters(){
- while(waiters.length<staff){const p=waiterHome(waiters.length);waiters.push({x:p.x,y:p.y,mode:'idle',table:0,wait:0});}
+ while(waiters.length<staff){const p=waiterHome(waiters.length);waiters.push({x:p.x,y:p.y,mode:'idle',table:0,wait:0,lastOrderId:0});}
  waiters.length=staff;
  waiters.forEach((w,i)=>{
   if(w.mode==='idle'){
-   const o=orders.find(o=>((o.table-1)%staff)===i);
-   if(o){w.table=o.table;w.mode='going';}
+   const o=orders.find(o=>((o.table-1)%staff)===i&&o.id!==w.lastOrderId);
+   if(o){w.table=o.table;w.lastOrderId=o.id;w.mode='going';}
   }
   const home=waiterHome(i),dest=w.mode==='going'||w.mode==='visiting'?tableSpot(w.table):home;
   if(w.mode==='idle')return;
