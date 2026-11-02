@@ -487,7 +487,7 @@ async function startIsa(){
 ['pointerdown','touchstart','click'].forEach(evt=>document.addEventListener(evt,startIsa,{once:true,passive:true}));
 
 // V2.18: comprobación de actualizaciones publicadas en GitHub Releases.
-const APP_VERSION='3.0.4';
+const APP_VERSION='3.0.5';
 async function checkForUpdates(){
  $('updateBanner').style.display='none';
  try{
