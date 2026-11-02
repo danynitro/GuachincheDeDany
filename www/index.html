@@ -135,7 +135,7 @@ footer{color:#d9efff}
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v3.0.9 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v3.1.0 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=5,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
@@ -481,7 +481,7 @@ async function startIsa(){
 ['pointerdown','touchstart','click'].forEach(evt=>document.addEventListener(evt,startIsa,{once:true,passive:true}));
 
 // V2.18: comprobación de actualizaciones publicadas en GitHub Releases.
-const APP_VERSION='3.0.9';
+const APP_VERSION='3.1.0';
 async function checkForUpdates(){
  $('updateBanner').style.display='none';
  try{
