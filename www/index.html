@@ -85,6 +85,29 @@ button:active{transform:translateY(2px);filter:brightness(1.12)}
 .bottom-nav button.active{background:linear-gradient(#f0c66d,#a86b32);color:#24170e;border-color:#ffe2a0}
 .update-banner{background:linear-gradient(145deg,#654327,#332116);border:2px solid #e1b16d;color:#fff2db}
 footer{color:#d1ad7e}
+
+/* V3.0.1 — recuperar identidad cromática canaria: azul, amarillo y blanco */
+:root{color-scheme:dark}
+header{background:linear-gradient(135deg,#17669c 0%,#10436f 58%,#0b2d4d 100%);border-bottom:4px solid #f4cf35}
+h1{color:#fff;text-shadow:2px 2px #09233b}
+.tag{color:#fff1b5}
+.day{background:linear-gradient(145deg,#145987,#0b3457);border:2px solid #f4cf35;color:#fff}
+.stats{background:linear-gradient(180deg,#174f79,#0c2e4d);border-top:2px solid #f4cf35;border-bottom:3px solid #f4cf35}
+.stat{background:linear-gradient(145deg,#267caf,#15527e);border:2px solid #f3d43d;color:#fff;box-shadow:inset 0 1px #ffffff55,0 3px #082a46}
+.stat b{color:#ffe34d}
+.panel{background:linear-gradient(145deg,#185c89,#10436a 68%,#0b3454);border:2px solid #f1cf3b;box-shadow:inset 0 1px #ffffff35,0 5px 0 #082a45,0 8px 15px #0008}
+.panel h2{color:#ffe34d;text-shadow:1px 2px #0a3555;border-bottom:1px solid #f1cf3b88}
+button{background:linear-gradient(180deg,#f8dc62 0%,#e4b92e 48%,#b98219 100%);border:2px solid #fff0a3;border-bottom:5px solid #805616;color:#153b59;text-shadow:0 1px #fff6d0;box-shadow:inset 0 1px #ffffffaa,0 2px 4px #0007}
+.dish,.order-card{background:linear-gradient(145deg,#267eaa,#15547d);border:1px solid #9bd5ed;color:#fff}
+.dish b{color:#ffe34d}.order-card.active{background:#236f99;border:2px solid #ffe34d}
+.order-lines{color:#fff}.order-status{color:#ffe34d}.price{color:#fff18a}
+#log{color:#fff}.hint{color:#e0f3ff}
+.bottom-nav{background:linear-gradient(#17669c,#0b2d4d);border-top:3px solid #f4cf35;box-shadow:0 -5px 18px #000b}
+.bottom-nav button{background:linear-gradient(180deg,#fff 0%,#e5edf2 52%,#b9cedb 100%);border:2px solid #f4d33d;border-bottom:5px solid #55758a;color:#12466c;text-shadow:none}
+.bottom-nav button.active{background:linear-gradient(#ffe76b,#e9bd2f);color:#123b5c;border-color:#fff0a3}
+.update-banner{background:linear-gradient(145deg,#185c89,#0b3454);border:2px solid #f4cf35;color:#fff}
+.update-banner button{background:linear-gradient(#ffe66b,#dcae25);color:#123b5c}
+footer{color:#d9efff}
 </style></head><body>
 <header><div><h1>🍷 GUACHINCHE DE DANY</h1><div class="tag">Un rincón canario · Tenerife</div></div><div class="header-actions"><div class="day">📅 DÍA <span id="day">1</span></div></div></header>
 <div id="updateBanner" class="update-banner"><div id="updateMessage">Hay una actualización disponible.</div><button id="updateButton">⬇️ Descargar e instalar actualización</button><small>Android te pedirá confirmar la instalación.</small></div>
@@ -112,7 +135,7 @@ footer{color:#d1ad7e}
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v3.0 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v3.0.1 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=5,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
