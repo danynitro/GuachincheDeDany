@@ -187,7 +187,7 @@ function makeOrder(table){
  const pattern=patterns[Math.floor(Math.random()*patterns.length)];
  const items=pattern.map(([id,qty])=>({id,qty,ready:0}));
  const order={id:nextOrderId++,table,items,created:tick};
- orders.push(order);activeOrderId=order.id;
+ orders.push(order);if(activeOrderId===null)activeOrderId=order.id;
  const spoken=items.map(it=>it.qty+' '+dishes.find(d=>d.id===it.id).name).join(', ');
  addLog('🗣️ Mesa '+table+' pide: '+spoken+'.');
  renderOrders();
