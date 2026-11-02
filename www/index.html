@@ -67,7 +67,7 @@ footer{color:#b8d6e5}
 </div><div class="hint">Si te quedas sin dinero y sin ingredientes, aparecerá un repartidor de Glovo con un pedido de emergencia.</div></div>
 
 <div class="panel focused" id="ordersPanel"><h2>🧾 PEDIDOS DE LAS MESAS</h2><div id="orders" class="order-grid"><div class="dish">Esperando a los primeros clientes...</div></div></div>
-<div class="panel" id="kitchenPanel"><h2>👨‍🍳 COCINA · PREPARA TÚ LOS PLATOS</h2><div id="activeOrderInfo" class="dish">Selecciona un pedido para empezar.</div><div class="kitchen-grid" id="kitchenButtons"></div><div id="kitchenStatus" class="order-status">Selecciona los platos solicitados y después entrega el pedido.</div><button id="deliverBtn" disabled style="width:100%;margin-top:8px">🍽️ Entregar pedido</button></div>
+<div class="panel" id="kitchenPanel"><h2>👨‍🍳 COCINA · PREPARA TÚ LOS PLATOS</h2><div id="activeOrderInfo" class="dish">Selecciona un pedido para empezar.</div><div class="kitchen-grid" id="kitchenButtons"></div><div id="kitchenStatus" class="order-status">Al completar todos los platos, el pedido se entrega y se cobra automáticamente.</div></div>
 <div class="panel" id="menuPanel"><h2>🍽️ CARTA CANARIA</h2><div class="menus">
 <div class="dish"><b>MENÚ DESIRÉE</b><span class="price">24 €</span><br>Queso asado con mojo · Croquetas caseras · Carne fiesta con papas arrugadas · Quesillo · Vino del país</div>
 <div class="dish"><b>MENÚ DYLAN</b><span class="price">17 €</span><br>Papas arrugadas · Garbanzas · Carne fiesta · Refresco</div>
@@ -81,7 +81,7 @@ footer{color:#b8d6e5}
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v2.9 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v2.11 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
@@ -228,20 +228,19 @@ function renderOrders(){
  else root.innerHTML=orders.map(o=>{
   const done=o.items.every(i=>i.ready>=i.qty);
   const lines=o.items.map(i=>'<div>• '+i.qty+' × '+dishes.find(d=>d.id===i.id).name+' <b>('+i.ready+'/'+i.qty+')</b></div>').join('');
-  return '<div class="order-card '+(o.id===activeOrderId?'active':'')+'"><b>🪑 MESA '+o.table+'</b><div class="order-lines">'+lines+'</div><div class="order-status">'+(done?'Todo preparado · listo para entregar':'Esperando preparación')+'</div><button onclick="selectOrder('+o.id+')">Seleccionar pedido</button></div>';
+  return '<div class="order-card '+(o.id===activeOrderId?'active':'')+'"><b>🪑 MESA '+o.table+'</b><div class="order-lines">'+lines+'</div><div class="order-status">'+(done?'Todo preparado · entregado automáticamente':'Esperando preparación')+'</div><button onclick="selectOrder('+o.id+')">Seleccionar pedido</button></div>';
  }).join('');
  const o=currentOrder();
  $('activeOrderInfo').innerHTML=o?'<b>Pedido de la mesa '+o.table+'</b><div class="order-lines">'+o.items.map(i=>'• '+i.qty+' × '+dishes.find(d=>d.id===i.id).name+' — preparados: '+i.ready+'/'+i.qty).join('<br>')+'</div>':'Selecciona un pedido para empezar.';
  $('kitchenButtons').innerHTML=dishes.map(d=>'<button onclick="prepareDish(\''+d.id+'\')" '+(!o||!o.items.some(i=>i.id===d.id&&i.ready<i.qty)||stock<=0?'disabled':'')+'>'+d.name+'</button>').join('');
- $('deliverBtn').disabled=!o||!o.items.every(i=>i.ready>=i.qty);
- $('kitchenStatus').textContent=o?'Ingredientes disponibles: '+stock+' · Prepara solo los platos que aparecen en el pedido.':'Selecciona un pedido para cocinar.';
+ $('kitchenStatus').textContent=o?'Ingredientes disponibles: '+stock+' · Al preparar el último plato, se entrega y cobra automáticamente.':'Selecciona un pedido para cocinar.';
 }
 window.selectOrder=id=>{activeOrderId=id;renderOrders()};
 window.prepareDish=id=>{
  const o=currentOrder(),item=o&&o.items.find(i=>i.id===id);
  if(!item||item.ready>=item.qty)return;
  if(stock<1){addLog('⚠️ No quedan ingredientes. Pide suministros a Glovo o compra más.');return}
- item.ready++;stock--;addLog('👨‍🍳 Mesa '+o.table+': preparado '+dishes.find(d=>d.id===id).name+'.');updateUI();renderOrders();save();
+ item.ready++;stock--;addLog('👨‍🍳 Mesa '+o.table+': preparado '+dishes.find(d=>d.id===id).name+'.');if(o.items.every(i=>i.ready>=i.qty)){deliverOrder();return;}updateUI();renderOrders();save();
 };
 function deliverOrder(){
  const o=currentOrder();if(!o||!o.items.every(i=>i.ready>=i.qty))return;
@@ -251,7 +250,6 @@ function deliverOrder(){
  orders=orders.filter(x=>x.id!==o.id);activeOrderId=orders.length?orders[0].id:null;
  addLog('✅ Mesa '+o.table+' atendida. Cobras '+total+' €.');updateUI();renderOrders();drawScene();save();
 }
-$('deliverBtn').onclick=deliverOrder;
 function updateUI(){
  $('cash').textContent=cash+' €';$('stock').textContent=stock;$('rep').textContent=rep+'%';$('customers').textContent=orders.length;$('day').textContent=day;
  $('tableBtn').disabled=cash<60||tables>=8;$('staffBtn').disabled=cash<100||staff>=5;$('stockBtn').disabled=cash<35;$('upgradeBtn').disabled=cash<180||upgraded;
