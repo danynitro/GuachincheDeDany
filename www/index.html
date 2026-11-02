@@ -85,7 +85,7 @@ ${styleInsert}.update-banner{display:none;margin:8px auto;padding:10px;max-width
 <button data-target="managePanel">🏡<br>Local</button>
 <button data-target="menuPanel">🍽️<br>Carta</button>
 <button data-target="activityPanel">📋<br>Actividad</button>
-</nav><footer>Guachinche de Dany v2.20 · Juego offline · Hecho en Tenerife</footer>
+</nav><footer>Guachinche de Dany v2.21 · Juego offline · Hecho en Tenerife</footer>
 <script>
 const canvas=document.getElementById('game'),g=canvas.getContext('2d');const $=id=>document.getElementById(id);
 let cash=350,rep=1,tables=3,staff=1,stock=16,customers=[],orders=[],activeOrderId=null,nextOrderId=1,day=1,served=0,upgraded=false,tick=0,courierTimer=0,lastCourierDay=0,orderCooldown=5,waiters=[],logs=['Has abierto tu guachinche. ¡Que empiece el servicio!'];
@@ -293,8 +293,9 @@ function renderOrders(){
 window.selectOrder=id=>{activeOrderId=id;renderOrders()};
 let kitchenProgress=0,kitchenTimer=null,kitchenBusy=false;window.cookingDishId=null;
 function finishDish(orderId,dishId){
+ if(kitchenTimer!==null){clearInterval(kitchenTimer);kitchenTimer=null;}
  const o=orders.find(x=>x.id===orderId),item=o&&o.items.find(i=>i.id===dishId);
- kitchenBusy=false;kitchenProgress=0;kitchenTimer=null;window.cookingDishId=null;
+ kitchenBusy=false;kitchenProgress=0;window.cookingDishId=null;
  if(!o||!item||item.ready>=item.qty)return;
  item.ready++;stock--;addLog('👨‍🍳 Mesa '+o.table+': preparado '+dishes.find(d=>d.id===dishId).name+'.');
  if(o.items.every(i=>i.ready>=i.qty)){activeOrderId=o.id;deliverOrder();return;}
@@ -371,7 +372,7 @@ async function startIsa(){
 ['pointerdown','touchstart','click'].forEach(evt=>document.addEventListener(evt,startIsa,{once:true,passive:true}));
 
 // V2.18: comprobación de actualizaciones publicadas en GitHub Releases.
-const APP_VERSION='2.20';
+const APP_VERSION='2.21';
 async function checkForUpdates(){
  try{
   const response=await fetch('https://api.github.com/repos/danynitro/GuachincheDeDany/releases/latest',{cache:'no-store'});
