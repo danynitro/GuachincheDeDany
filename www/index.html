@@ -194,61 +194,50 @@ function updateWaiters(){
  });
 }
 function drawScene(){
- rect(0,0,640,400,'#759d5a');
- for(let y=0;y<400;y+=32)for(let x=0;x<640;x+=32)if((x/32+y/32)%2===0)rect(x,y,32,32,'#80a765');
- // courtyard wall and tiled roof
- rect(8,8,624,112,'#d6c39e');for(let x=8;x<632;x+=32){rect(x,8,29,22,'#a94e32');rect(x+5,29,26,12,'#bf6840')}
- rect(8,111,624,8,'#5c3925');
- // Decoración canaria desbloqueada al mejorar el local
- if(upgraded){
-  // Cuadro de paisaje canario: Teide y mar
-  rect(92,39,58,48,'#704326');outline(92,39,58,48,'#e8bd75');
-  rect(98,45,46,36,'#8bc0c5');rect(98,63,46,18,'#326f86');
-  // Teide
-  rect(112,51,17,20,'#756b60');rect(116,45,9,8,'#e8e0d1');rect(109,61,25,10,'#547a48');
-  // Sol
-  rect(133,49,5,5,'#f4cf64');
-  // Pintadera canaria enmarcada
-  rect(552,39,54,48,'#704326');outline(552,39,54,48,'#e8bd75');
-  rect(558,45,42,36,'#e7d3a7');
-  // Geometric pintadera motif
-  rect(575,51,8,24,'#a64d32');rect(567,59,24,8,'#a64d32');
-  rect(571,55,16,16,'#e7d3a7');rect(575,59,8,8,'#a64d32');
-  rect(579,47,2,4,'#a64d32');rect(579,75,2,4,'#a64d32');
-  rect(563,63,4,2,'#a64d32');rect(591,63,4,2,'#a64d32');
-  // Plato decorativo y bandera
-  rect(157,47,25,25,'#e7d3a7');outline(157,47,25,25,'#704326');
-  rect(165,51,9,17,'#a64d32');rect(161,55,17,9,'#a64d32');
-  drawFlag(164,91,32,18);
- }
- // hanging sign
- rect(205,25,230,55,'#58351e');outline(205,25,230,55,'#e0ad63');text('GUACHINCHE DE DANY',220,49,16,'#ffdf9c');drawFlag(390,34,30,18);
- // window / kitchen counter
- rect(235,76,190,55,'#4b3526');rect(244,82,172,39,'#9a6035');rect(252,87,156,25,'#65432a');text('BARRA · VINO DEL PAÍS',270,103,10,'#ffe0a6');
- rect(450,73,105,48,'#e9dfc6');outline(450,73,105,48);text('COCINA',476,101,12,'#55402d');
- // shelves, barrels and plants
- rect(30,83,42,30,'#704528');rect(35,88,32,19,'#b87a3d');rect(580,81,30,34,'#75462b');rect(586,87,18,22,'#b77b3e');
- rect(20,130,30,36,'#a66a36');rect(25,124,20,9,'#548044');rect(585,130,34,36,'#a66a36');rect(590,124,24,9,'#548044');
- // flag bunting
- for(let i=0;i<7;i++){let x=95+i*68;rect(x,122,22,12,['#fff','#2466ad','#f2c82b'][i%3])}
- // dining floor
- rect(12,140,616,245,'#b88d61');for(let y=145;y<385;y+=25)for(let x=15;x<625;x+=40){rect(x,y,36,21,((x+y)/5)%2<1?'#c49a6c':'#b98d60')}
- // wall posters
- rect(25,175,74,48,'#39291e');text('MENÚ',42,193,12,'#ffdc9a');text('PAPAS',37,210,9);
- rect(532,174,80,50,'#eee0c2');outline(532,174,80,50);text('TENERIFE',542,192,10,'#413328');text('CANARIAS',540,207,10,'#413328');
- // tables
- const spots=[];for(let i=0;i<Math.min(tables,8);i++){let x=125+(i%4)*126,y=190+Math.floor(i/4)*125;table(x,y,i+1);spots.push({x,y})}
- // counter chef
- person(335,115,{shirt:'#eee0c7',hat:'black'},1.2);
- // customers sit at tables
- customers.forEach((p,i)=>{let sp=spots[p.table%spots.length]||spots[0];person(sp.x-13,sp.y-20,{shirt:p.shirt,hat:p.hat,skin:p.skin},.88);if(i%2===0)person(sp.x+22,sp.y-18,{shirt:p.shirt2,hat:p.hat2,skin:'#d99a72'},.82)});
- // Camareros: cada uno atiende las mesas que le corresponden y camina hasta ellas
- waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#f0dfc7',hat:i%2?'blue':'flag'},.9);rect(w.x-9,w.y+9,20,3,'#3c2c20');});
- // delivery rider with motorbike while event active
- if(courierTimer>0){rect(510,310,80,15,'#51402a');rect(520,284,47,21,'#f4c928');outline(520,284,47,21,'#29221b');rect(531,273,22,14,'#f4c928');person(543,276,{shirt:'#f3c928',hat:'blue',skin:'#d99a72'},.8);text('Glovo',523,299,9,'#168b56');rect(492,316,17,10,'#292929');rect(574,316,17,10,'#292929')}
- // decorative sign and island flag
- drawFlag(25,250,24,15);text('ISLAS CANARIAS',18,278,8,'#4d3524');
- text('GUACHINCHE DE DANY · TENERIFE',18,378,10,'#4b3020');
+ // Patio canario ilustrado: composición basada en la referencia de Dany
+ rect(0,0,640,400,'#b58a5f');
+ // cielo y tejado de teja
+ rect(0,0,640,91,'#397da8');
+ for(let y=73;y<143;y+=13)for(let x=(y%26?0:16);x<640;x+=32){rect(x,y,29,12,'#a8492e');rect(x+2,y+2,25,4,'#d47749');rect(x+4,y+8,21,2,'#78351f')}
+ // pared encalada con piedra
+ rect(0,132,640,268,'#dfd1b8');
+ for(let y=145;y<390;y+=39)for(let x=(y%78?0:19);x<640;x+=58){rect(x,y,35,20,'#81796d');rect(x+3,y+3,29,14,'#999083')}
+ // suelo de adoquines
+ rect(0,278,640,122,'#806c57');
+ for(let y=281;y<400;y+=18)for(let x=(y%36?0:24);x<640;x+=48){rect(x,y,44,14,'#9b8065');outline(x,y,44,14,'#705c49')}
+ // plantas y flores junto al tejado
+ for(let i=0;i<23;i++){let x=175+(i%8)*18,y=82+Math.floor(i/8)*13;rect(x,y,17,14,'#276b35');rect(x+4,y-3,5,5,'#f0a51e');rect(x+9,y+2,5,5,'#d62d76')}
+ // estructura de barra
+ rect(181,113,278,175,'#57351f');rect(191,122,258,151,'#8c5934');rect(201,133,238,126,'#55504a');
+ rect(190,250,270,26,'#754323');rect(183,274,286,14,'#442817');
+ // cartel principal
+ rect(250,94,143,53,'#4a2919');outline(250,94,143,53,'#e4b46d');text('GUACHINCHE',260,116,14,'#fff0d5');text('DE DANY',278,135,17,'#fff0d5');drawFlag(363,111,23,14);
+ // estantes y cocina
+ rect(207,151,80,7,'#633b21');rect(213,143,13,9,'#c18b43');rect(233,140,12,12,'#d6c7a5');rect(253,144,20,7,'#a34d2e');
+ rect(302,153,133,9,'#342e29');for(let x=311;x<426;x+=37){rect(x,163,23,6,'#8d5a31');rect(x+6,156,12,8,'#282828')}
+ rect(300,181,33,48,'#a8b7bb');outline(300,181,33,48,'#36434a');rect(305,188,22,34,'#d1d9d7');rect(315,185,2,38,'#66767a');
+ rect(339,207,91,24,'#292827');rect(345,197,79,10,'#9b6b3c');rect(355,191,19,7,'#d5a04d');rect(390,191,22,7,'#b36a35');
+ // lámparas cálidas
+ rect(165,155,9,28,'#24201c');rect(159,179,21,8,'#f4c45a');rect(468,154,9,28,'#24201c');rect(462,178,21,8,'#f4c45a');
+ // pizarra del menú
+ rect(22,164,112,111,'#56351f');outline(22,164,112,111,'#d39b5b');rect(29,171,98,96,'#252525');text('HOY:',42,190,13,'#fff');text('CARNE FIESTA',35,211,9,'#fff');text('PAPAS',35,228,10,'#fff');text('MOJO',35,244,10,'#fff');text('VINO DEL PAÍS',35,259,9,'#fff');
+ // cuadro Tenerife
+ rect(520,165,98,90,'#a87948');outline(520,165,98,90,'#e7c28b');rect(527,172,84,76,'#e8d7b6');text('TENERIFE',537,193,13,'#30251d');text('ISLAS',548,215,12,'#30251d');text('CANARIAS',533,231,11,'#30251d');rect(552,199,26,3,'#30251d');
+ // barriles, macetas y bandera
+ rect(8,270,43,48,'#9a5b2d');for(let y=276;y<314;y+=9)rect(8,y,43,3,'#63391e');rect(15,263,29,8,'#50311d');rect(8,318,36,9,'#50311d');
+ rect(584,270,34,35,'#a65c32');rect(579,264,44,8,'#5e3b24');for(let i=0;i<5;i++)rect(584+i*7,250-(i%2)*8,6,23,'#28723b');
+ drawFlag(57,236,27,17);
+ // mesas con manteles de cuadros rojos y blancos
+ const spots=[];for(let i=0;i<Math.min(tables,8);i++){let pos=[{x:145,y:306},{x:325,y:306},{x:490,y:309},{x:95,y:365},{x:265,y:365},{x:440,y:365},{x:180,y:250},{x:365,y:250}][i];spots.push(pos);table(pos.x,pos.y,i+1);rect(pos.x-27,pos.y-12,54,8,'#fff0df');for(let k=0;k<6;k++)rect(pos.x-25+k*9,pos.y-12,4,8,'#c83d32');rect(pos.x-27,pos.y-4,54,4,'#fff0df')}
+ // Dany atendiendo en la barra
+ person(337,213,{shirt:'#eee0c7',hat:'black',skin:'#d99a72'},1.25);
+ // clientes en las mesas
+ customers.forEach((p,i)=>{if(!spots.length)return;let sp=spots[p.table%spots.length]||spots[0];person(sp.x-12,sp.y-20,{shirt:p.shirt,hat:p.hat,skin:p.skin},.86);if(i%2===0)person(sp.x+20,sp.y-17,{shirt:p.shirt2,hat:p.hat2,skin:'#d99a72'},.8)});
+ // camareros
+ waiters.forEach((w,i)=>{person(w.x,w.y,{shirt:'#f0dfc7',hat:i%2?'blue':'flag'},.9)});
+ // repartidor y moto durante pedido
+ if(courierTimer>0){rect(520,320,65,9,'#262626');rect(526,300,43,20,'#f4c928');outline(526,300,43,20,'#29221b');person(545,285,{shirt:'#f3c928',hat:'blue',skin:'#d99a72'},.85);text('Glovo',531,314,9,'#168b56');rect(510,329,13,10,'#292929');rect(576,329,13,10,'#292929')}
+ text('TENERIFE · SABORES DE CANARIAS',205,393,10,'#fff0d5');
 }
 function addLog(s){logs.unshift(s);logs=logs.slice(0,5);$('log').innerHTML=logs.join('<br>')}
 function courier(){stock+=10;courierTimer=12;lastCourierDay=day;$('notice').style.display='block';addLog('🛵 ¡Glovo ha llegado! Pedido de emergencia: +10 ingredientes gratis.');}
